@@ -6,8 +6,9 @@
 
 <div class="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
 	<header class="py-6 px-4 md:px-8">
-		<div class="container mx-auto">
+		<div class="container mx-auto flex justify-between items-center">
 			<h1 class="text-2xl font-light tracking-wide">Inquiry</h1>
+			<a href="/inquiries" class="text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm">View all inquiries</a>
 		</div>
 	</header>
 	<main class="flex-1 px-4 md:px-8 py-6">

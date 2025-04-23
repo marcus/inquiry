@@ -118,14 +118,10 @@ Created on ${new Date().toLocaleDateString()}`;
 </script>
 
 <div class="space-y-8">
-	<div class="mb-12">
-		<a href="/inquiries" class="text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm">View all inquiries</a>
-	</div>
-
 	<div class="relative min-h-[300px]">
 		{#if displayStep === 0}
 			<div in:receive={{key: 'step-0'}} out:send={{key: 'step-0'}} class="space-y-4 absolute w-full">
-				<h2 class="text-xl font-light mb-6">What belief would you like to examine?</h2>
+				<h2 class="text-xl font-light mb-6 text-center">What belief would you like to examine?</h2>
 				<textarea 
 					bind:value={belief} 
 					class="w-full p-4 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
@@ -143,13 +139,12 @@ Created on ${new Date().toLocaleDateString()}`;
 			</div>
 		{:else if displayStep === 1}
 			<div in:receive={{key: 'step-1'}} out:send={{key: 'step-1'}} class="space-y-6 absolute w-full">
-				<div class="p-4 bg-slate-100 rounded-md">
-					<h3 class="text-sm uppercase text-slate-500 mb-2">Your belief</h3>
-					<p class="text-lg">{belief}</p>
-				</div>
+				{#if belief}
+					<p class="text-lg text-center p-4 italic">{belief}</p>
+				{/if}
 				
 				<div class="space-y-4">
-					<h2 class="text-xl font-light mb-2">Is it true?</h2>
+					<h2 class="text-xl font-light mb-2 text-center">Is it true?</h2>
 					<textarea 
 						bind:value={isTrue} 
 						class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
@@ -176,13 +171,12 @@ Created on ${new Date().toLocaleDateString()}`;
 			</div>
 		{:else if displayStep === 2}
 			<div in:receive={{key: 'step-2'}} out:send={{key: 'step-2'}} class="space-y-6 absolute w-full">
-				<div class="p-4 bg-slate-100 rounded-md">
-					<h3 class="text-sm uppercase text-slate-500 mb-2">Your belief</h3>
-					<p class="text-lg">{belief}</p>
-				</div>
+				{#if belief}
+					<p class="text-lg text-center p-4 italic">{belief}</p>
+				{/if}
 				
 				<div class="space-y-4">
-					<h2 class="text-xl font-light mb-2">Can I absolutely know it's true?</h2>
+					<h2 class="text-xl font-light mb-2 text-center">Can I absolutely know it's true?</h2>
 					<textarea 
 						bind:value={absolutelyTrue} 
 						class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
@@ -209,13 +203,12 @@ Created on ${new Date().toLocaleDateString()}`;
 			</div>
 		{:else if displayStep === 3}
 			<div in:receive={{key: 'step-3'}} out:send={{key: 'step-3'}} class="space-y-6 absolute w-full">
-				<div class="p-4 bg-slate-100 rounded-md">
-					<h3 class="text-sm uppercase text-slate-500 mb-2">Your belief</h3>
-					<p class="text-lg">{belief}</p>
-				</div>
+				{#if belief}
+					<p class="text-lg text-center p-4 italic">{belief}</p>
+				{/if}
 				
 				<div class="space-y-4">
-					<h2 class="text-xl font-light mb-2">How do I react when I believe that thought?</h2>
+					<h2 class="text-xl font-light mb-2 text-center">How do I react when I believe that thought?</h2>
 					<textarea 
 						bind:value={reaction} 
 						class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
@@ -242,13 +235,12 @@ Created on ${new Date().toLocaleDateString()}`;
 			</div>
 		{:else if displayStep === 4}
 			<div in:receive={{key: 'step-4'}} out:send={{key: 'step-4'}} class="space-y-6 absolute w-full">
-				<div class="p-4 bg-slate-100 rounded-md">
-					<h3 class="text-sm uppercase text-slate-500 mb-2">Your belief</h3>
-					<p class="text-lg">{belief}</p>
-				</div>
+				{#if belief}
+					<p class="text-lg text-center p-4 italic">{belief}</p>
+				{/if}
 				
 				<div class="space-y-4">
-					<h2 class="text-xl font-light mb-2">Who would I be without the thought?</h2>
+					<h2 class="text-xl font-light mb-2 text-center">Who would I be without the thought?</h2>
 					<textarea 
 						bind:value={withoutThought} 
 						class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
@@ -275,13 +267,12 @@ Created on ${new Date().toLocaleDateString()}`;
 			</div>
 		{:else if displayStep === 5}
 			<div in:receive={{key: 'step-5'}} out:send={{key: 'step-5'}} class="space-y-6 absolute w-full">
-				<div class="p-4 bg-slate-100 rounded-md">
-					<h3 class="text-sm uppercase text-slate-500 mb-2">Your belief</h3>
-					<p class="text-lg">{belief}</p>
-				</div>
+				{#if belief}
+					<p class="text-lg text-center p-4 italic">{belief}</p>
+				{/if}
 				
 				<div class="space-y-4">
-					<h2 class="text-xl font-light mb-6">Write three turnarounds for your belief</h2>
+					<h2 class="text-xl font-light mb-6 text-center">Write three turnarounds for your belief</h2>
 					
 					<div class="space-y-4 md:space-y-0 md:grid md:grid-cols-3 md:gap-4">
 						<div>
@@ -333,7 +324,7 @@ Created on ${new Date().toLocaleDateString()}`;
 			</div>
 		{:else if displayStep === 6}
 			<div in:receive={{key: 'step-6'}} out:send={{key: 'step-6'}} class="space-y-8 absolute w-full">
-				<h2 class="text-xl font-light mb-6">Inquiry Summary</h2>
+				<h2 class="text-xl font-light mb-6 text-center">Inquiry Summary</h2>
 				
 				<div class="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-slate-200">
 					<div class="space-y-2">
