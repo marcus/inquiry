@@ -19,20 +19,17 @@ export async function POST({ request }) {
   try {
     const inquiry = await request.json();
     const result = await db.insert(inquiries).values({
-      belief: inquiry.belief,
-      isTrue: inquiry.isTrue,
-      absolutelyTrue: inquiry.absolutelyTrue,
-      reaction: inquiry.reaction,
-      withoutThought: inquiry.withoutThought,
-      turnaround1: inquiry.turnaround1,
-      turnaround2: inquiry.turnaround2,
-      turnaround3: inquiry.turnaround3
-    });
+      belief: inquiry.belief || '',
+      isTrue: inquiry.isTrue || null,
+      absolutelyTrue: inquiry.absolutelyTrue || null,
+      reaction: inquiry.reaction || null,
+      withoutThought: inquiry.withoutThought || null,
+      turnaround1: inquiry.turnaround1 || null,
+      turnaround2: inquiry.turnaround2 || null,
+      turnaround3: inquiry.turnaround3 || null
+    }).returning({ id: inquiries.id });
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 201,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ id: result[0].id, success: true }, { status: 201 });
   } catch (error) {
     console.error('Failed to create inquiry:', error);
     return new Response(JSON.stringify({ error: 'Failed to create inquiry' }), {

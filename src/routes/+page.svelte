@@ -16,6 +16,7 @@
 	let saveSuccess = false;
 	let isTransitioning = false;
 	let showQuestion = true;
+	let forceShowSummary = false;
 
 	let inquiryId = null;
 	const LOCAL_STORAGE_KEY = 'unfinishedInquiryId';
@@ -127,9 +128,14 @@
 				visibleStep--;
 			}
 			showQuestion = true; // Start fade in
+			
+			// Log for debugging
+			console.log(`Transitioning from step ${visibleStep-1} to ${visibleStep}`);
+			
 			setTimeout(() => {
 				isTransitioning = false;
 			}, 400); // match fade duration
+			
 			// Fallback: ensure transition is reset even if event doesn't fire
 			setTimeout(safeResetTransition, 1000);
 		}
@@ -165,9 +171,32 @@
 		currentStep = visibleStep + 1; goToNextStep();
 	}
 	async function handleNextTurnarounds() {
-		await patchInquiry({ turnaround1, turnaround2, turnaround3 });
-		currentStep = visibleStep + 1;
-		goToNextStep();
+		try {
+			isTransitioning = true;
+			
+			// Make sure we have an inquiry ID before proceeding
+			if (!inquiryId) {
+				await createInquiry();
+			}
+			
+			// Ensure all turnarounds are saved
+			await patchInquiry({ 
+				turnaround1, 
+				turnaround2, 
+				turnaround3 
+			});
+			
+			// Force direct navigation to summary
+			currentStep = 6;
+			visibleStep = 6;
+			forceShowSummary = true;
+			showQuestion = true;
+			isTransitioning = false;
+		} catch (error) {
+			console.error('Error saving turnarounds:', error);
+			// Ensure transition state is reset if there's an error
+			isTransitioning = false;
+		}
 	}
 
 	async function saveInquiry() {
@@ -194,7 +223,7 @@
 
 <div class="space-y-8">
 	<div class="relative min-h-[300px]">
-		{#if showQuestion}
+		{#if showQuestion && !forceShowSummary}
 			<div transition:fade={{ duration: 400 }} on:outroend={handleFadeOutEnd} class="absolute w-full">
 				{#if visibleStep === 0}
 					<h2 class="text-xl font-light mb-6 text-center">What belief would you like to examine?</h2>
@@ -376,61 +405,65 @@
 							Review
 						</button>
 					</div>
-				{:else if visibleStep === 6}
-					<h2 class="text-xl font-light mb-6 text-center">Inquiry Summary</h2>
-					<div class="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-						<div class="space-y-2">
-							<h3 class="text-lg font-medium">Belief</h3>
-							<p>{belief}</p>
-						</div>
-						<div class="space-y-2">
-							<h3 class="text-lg font-medium">Is it true?</h3>
-							<p>{isTrue}</p>
-						</div>
-						<div class="space-y-2">
-							<h3 class="text-lg font-medium">Can I absolutely know it's true?</h3>
-							<p>{absolutelyTrue}</p>
-						</div>
-						<div class="space-y-2">
-							<h3 class="text-lg font-medium">How do I react when I believe that thought?</h3>
-							<p>{reaction}</p>
-						</div>
-						<div class="space-y-2">
-							<h3 class="text-lg font-medium">Who would I be without the thought?</h3>
-							<p>{withoutThought}</p>
-						</div>
-						<div class="space-y-2">
-							<h3 class="text-lg font-medium">Turnarounds</h3>
-							<ol class="list-decimal pl-6 space-y-2">
-								<li>{turnaround1}</li>
-								<li>{turnaround2}</li>
-								<li>{turnaround3}</li>
-							</ol>
-						</div>
+				{/if}
+			</div>
+		{/if}
+		
+		{#if forceShowSummary || visibleStep === 6}
+			<div class="w-full" transition:fade={{ duration: 400 }}>
+				<h2 class="text-xl font-light mb-6 text-center">Inquiry Summary</h2>
+				<div class="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-slate-200 relative">
+					<button 
+						on:click={copyToClipboard}
+						class="absolute top-4 right-4 text-slate-500 hover:text-blue-600 transition-colors duration-200"
+						title="Copy as Markdown"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+						</svg>
+					</button>
+					<div class="space-y-2">
+						<h3 class="text-lg font-medium">Belief</h3>
+						<p>{belief}</p>
 					</div>
-					<div class="flex flex-col md:flex-row md:justify-between space-y-4 md:space-y-0">
-						<button 
-							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
-							disabled={isTransitioning}
-							class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-						>
-							Back
-						</button>
-						<div class="flex space-x-4">
-							<button 
-								on:click={saveInquiry}
-								disabled={isSaving}
-								class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-							>
-								{isSaving ? 'Saving...' : 'Save Inquiry'}
-							</button>
-						</div>
+					<div class="space-y-2">
+						<h3 class="text-lg font-medium">Is it true?</h3>
+						<p>{isTrue}</p>
 					</div>
-					{#if saveSuccess}
-						<div transition:fade class="p-3 bg-green-100 text-green-800 rounded-md text-center">
-							Inquiry saved successfully
-						</div>
-					{/if}
+					<div class="space-y-2">
+						<h3 class="text-lg font-medium">Can I absolutely know it's true?</h3>
+						<p>{absolutelyTrue}</p>
+					</div>
+					<div class="space-y-2">
+						<h3 class="text-lg font-medium">How do I react when I believe that thought?</h3>
+						<p>{reaction}</p>
+					</div>
+					<div class="space-y-2">
+						<h3 class="text-lg font-medium">Who would I be without the thought?</h3>
+						<p>{withoutThought}</p>
+					</div>
+					<div class="space-y-2">
+						<h3 class="text-lg font-medium">Turnarounds</h3>
+						<ol class="list-decimal pl-6 space-y-2">
+							<li>{turnaround1}</li>
+							<li>{turnaround2}</li>
+							<li>{turnaround3}</li>
+						</ol>
+					</div>
+				</div>
+				<div class="flex justify-start mt-6">
+					<button 
+						on:click={() => { forceShowSummary = false; currentStep = 5; visibleStep = 5; }}
+						disabled={isTransitioning}
+						class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+					>
+						Back
+					</button>
+				</div>
+				{#if saveSuccess}
+					<div transition:fade class="p-3 bg-green-100 text-green-800 rounded-md text-center mt-4">
+						Inquiry saved successfully
+					</div>
 				{/if}
 			</div>
 		{/if}
