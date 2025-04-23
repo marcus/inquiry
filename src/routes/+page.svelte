@@ -1,6 +1,13 @@
 <script>
-	import { fade } from 'svelte/transition';
+	import { fade, crossfade } from 'svelte/transition';
 	import { onMount } from 'svelte';
+
+	const [send, receive] = crossfade({
+		duration: 400,
+		fallback(node, params) {
+			return fade(node, { delay: 300, duration: 400, ...params });
+		}
+	});
 
 	let currentStep = 0;
 	let belief = '';
@@ -14,14 +21,18 @@
 	let isSaving = false;
 	let saveSuccess = false;
 	let isTransitioning = false;
+	let displayStep = 0; // The step that's actually being displayed
 
 	function goToNextStep() {
 		if (currentStep < 6 && !isTransitioning) {
 			isTransitioning = true;
 			setTimeout(() => {
+				displayStep = currentStep + 1;
 				currentStep++;
-				isTransitioning = false;
-			}, 500); // Match this to the fade-out duration
+				setTimeout(() => {
+					isTransitioning = false;
+				}, 400); // Match this to the crossfade duration
+			}, 400); // Wait for fade out before changing step
 		}
 	}
 
@@ -29,9 +40,12 @@
 		if (currentStep > 0 && !isTransitioning) {
 			isTransitioning = true;
 			setTimeout(() => {
+				displayStep = currentStep - 1;
 				currentStep--;
-				isTransitioning = false;
-			}, 500); // Match this to the fade-out duration
+				setTimeout(() => {
+					isTransitioning = false;
+				}, 400); // Match this to the crossfade duration
+			}, 400); // Wait for fade out before changing step
 		}
 	}
 
@@ -96,6 +110,11 @@ Created on ${new Date().toLocaleDateString()}`;
 
 		navigator.clipboard.writeText(summary);
 	}
+
+	// Initialize displayStep to match currentStep
+	onMount(() => {
+		displayStep = currentStep;
+	});
 </script>
 
 <div class="space-y-8">
@@ -103,9 +122,9 @@ Created on ${new Date().toLocaleDateString()}`;
 		<a href="/inquiries" class="text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm">View all inquiries</a>
 	</div>
 
-	{#if !isTransitioning}
-		{#if currentStep === 0}
-			<div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }} class="space-y-4">
+	<div class="relative min-h-[300px]">
+		{#if displayStep === 0}
+			<div in:receive={{key: 'step-0'}} out:send={{key: 'step-0'}} class="space-y-4 absolute w-full">
 				<h2 class="text-xl font-light mb-6">What belief would you like to examine?</h2>
 				<textarea 
 					bind:value={belief} 
@@ -122,8 +141,8 @@ Created on ${new Date().toLocaleDateString()}`;
 					</button>
 				</div>
 			</div>
-		{:else if currentStep === 1}
-			<div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }} class="space-y-6">
+		{:else if displayStep === 1}
+			<div in:receive={{key: 'step-1'}} out:send={{key: 'step-1'}} class="space-y-6 absolute w-full">
 				<div class="p-4 bg-slate-100 rounded-md">
 					<h3 class="text-sm uppercase text-slate-500 mb-2">Your belief</h3>
 					<p class="text-lg">{belief}</p>
@@ -155,8 +174,8 @@ Created on ${new Date().toLocaleDateString()}`;
 					</button>
 				</div>
 			</div>
-		{:else if currentStep === 2}
-			<div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }} class="space-y-6">
+		{:else if displayStep === 2}
+			<div in:receive={{key: 'step-2'}} out:send={{key: 'step-2'}} class="space-y-6 absolute w-full">
 				<div class="p-4 bg-slate-100 rounded-md">
 					<h3 class="text-sm uppercase text-slate-500 mb-2">Your belief</h3>
 					<p class="text-lg">{belief}</p>
@@ -188,8 +207,8 @@ Created on ${new Date().toLocaleDateString()}`;
 					</button>
 				</div>
 			</div>
-		{:else if currentStep === 3}
-			<div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }} class="space-y-6">
+		{:else if displayStep === 3}
+			<div in:receive={{key: 'step-3'}} out:send={{key: 'step-3'}} class="space-y-6 absolute w-full">
 				<div class="p-4 bg-slate-100 rounded-md">
 					<h3 class="text-sm uppercase text-slate-500 mb-2">Your belief</h3>
 					<p class="text-lg">{belief}</p>
@@ -221,8 +240,8 @@ Created on ${new Date().toLocaleDateString()}`;
 					</button>
 				</div>
 			</div>
-		{:else if currentStep === 4}
-			<div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }} class="space-y-6">
+		{:else if displayStep === 4}
+			<div in:receive={{key: 'step-4'}} out:send={{key: 'step-4'}} class="space-y-6 absolute w-full">
 				<div class="p-4 bg-slate-100 rounded-md">
 					<h3 class="text-sm uppercase text-slate-500 mb-2">Your belief</h3>
 					<p class="text-lg">{belief}</p>
@@ -254,8 +273,8 @@ Created on ${new Date().toLocaleDateString()}`;
 					</button>
 				</div>
 			</div>
-		{:else if currentStep === 5}
-			<div in:fade={{ duration: 500 }} out:fade={{ duration: 500 }} class="space-y-6">
+		{:else if displayStep === 5}
+			<div in:receive={{key: 'step-5'}} out:send={{key: 'step-5'}} class="space-y-6 absolute w-full">
 				<div class="p-4 bg-slate-100 rounded-md">
 					<h3 class="text-sm uppercase text-slate-500 mb-2">Your belief</h3>
 					<p class="text-lg">{belief}</p>
@@ -312,8 +331,8 @@ Created on ${new Date().toLocaleDateString()}`;
 					</button>
 				</div>
 			</div>
-		{:else if currentStep === 6}
-			<div in:fade={{ duration: 500 }} class="space-y-8">
+		{:else if displayStep === 6}
+			<div in:receive={{key: 'step-6'}} out:send={{key: 'step-6'}} class="space-y-8 absolute w-full">
 				<h2 class="text-xl font-light mb-6">Inquiry Summary</h2>
 				
 				<div class="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-slate-200">
@@ -386,5 +405,5 @@ Created on ${new Date().toLocaleDateString()}`;
 				{/if}
 			</div>
 		{/if}
-	{/if}
+	</div>
 </div>
