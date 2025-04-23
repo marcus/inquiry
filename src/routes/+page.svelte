@@ -1,6 +1,9 @@
 <script>
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
 
 	let currentStep = 0;
 	let visibleStep = 0;
@@ -20,6 +23,19 @@
 
 	let inquiryId = null;
 	const LOCAL_STORAGE_KEY = 'unfinishedInquiryId';
+
+	// Watch for URL changes to detect "new inquiry" requests
+	$: if (browser && $page.url.searchParams.get('new') === 'true') {
+		handleNewInquiryRequest();
+	}
+
+	// Handle the new inquiry request from URL parameter
+	async function handleNewInquiryRequest() {
+		console.log('New inquiry requested via URL parameter');
+		await startNewInquiry();
+		// Clear the URL parameter
+		goto('/', { replaceState: true });
+	}
 
 	// Try to resume unfinished inquiry on mount
 	onMount(async () => {
@@ -81,6 +97,31 @@
 		turnaround2 = '';
 		turnaround3 = '';
 		currentStep = visibleStep = 0;
+	}
+
+	// Handle starting a new inquiry
+	async function startNewInquiry() {
+		// If there's an in-progress inquiry, save it first
+		if (inquiryId) {
+			try {
+				// Save any entered data
+				await patchInquiry({
+					belief, isTrue, absolutelyTrue, reaction, withoutThought, 
+					turnaround1, turnaround2, turnaround3
+				});
+			} catch (error) {
+				console.error('Error saving inquiry before reset:', error);
+			}
+		}
+		
+		// Reset the inquiry state
+		resetInquiry();
+		
+		// Clear the local storage reference
+		localStorage.removeItem(LOCAL_STORAGE_KEY);
+		
+		// Navigate to the home page (which is the inquiry form)
+		goto('/', { replaceState: true });
 	}
 
 	async function createInquiry() {
