@@ -127,24 +127,20 @@
 			} else if (visibleStep > currentStep) {
 				visibleStep--;
 			}
-			showQuestion = true; // Start fade in
 			
 			// Log for debugging
 			console.log(`Transitioning from step ${visibleStep-1} to ${visibleStep}`);
 			
+			// Set a small delay before starting fade in to ensure proper sequencing
 			setTimeout(() => {
-				isTransitioning = false;
-			}, 400); // match fade duration
-			
-			// Fallback: ensure transition is reset even if event doesn't fire
-			setTimeout(safeResetTransition, 1000);
+				showQuestion = true; // Start fade in
+			}, 50);
 		}
 	}
 
-	// Fallback: always clear isTransitioning in case fade event fails
-	function safeResetTransition() {
-		if (isTransitioning) {
-			console.warn('Resetting transition state due to fallback timeout');
+	function handleFadeInEnd() {
+		if (showQuestion) {
+			// Reset transition state after fade-in is complete
 			isTransitioning = false;
 		}
 	}
@@ -224,7 +220,7 @@
 <div class="space-y-8">
 	<div class="relative min-h-[300px]">
 		{#if showQuestion && !forceShowSummary}
-			<div transition:fade={{ duration: 400 }} on:outroend={handleFadeOutEnd} class="absolute w-full">
+			<div transition:fade={{ duration: 400 }} on:outroend={handleFadeOutEnd} on:introend={handleFadeInEnd} class="absolute w-full">
 				{#if visibleStep === 0}
 					<h2 class="text-xl font-light mb-6 text-center">What belief would you like to examine?</h2>
 					<textarea 
