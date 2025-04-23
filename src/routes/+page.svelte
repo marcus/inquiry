@@ -28,27 +28,59 @@
 				const res = await fetch(`/api/inquiries/${savedId}`);
 				if (res.ok) {
 					const data = await res.json();
-					inquiryId = data.id;
-					belief = data.belief || '';
-					isTrue = data.isTrue || '';
-					absolutelyTrue = data.absolutelyTrue || '';
-					reaction = data.reaction || '';
-					withoutThought = data.withoutThought || '';
-					turnaround1 = data.turnaround1 || '';
-					turnaround2 = data.turnaround2 || '';
-					turnaround3 = data.turnaround3 || '';
-					// Set step based on progress
-					if (!belief) currentStep = visibleStep = 0;
-					else if (!isTrue) currentStep = visibleStep = 1;
-					else if (!absolutelyTrue) currentStep = visibleStep = 2;
-					else if (!reaction) currentStep = visibleStep = 3;
-					else if (!withoutThought) currentStep = visibleStep = 4;
-					else if (!turnaround1 || !turnaround2 || !turnaround3) currentStep = visibleStep = 5;
-					else currentStep = visibleStep = 6;
+					// Only resume if the inquiry is actually incomplete
+					const isComplete = data.belief && data.isTrue && data.absolutelyTrue && 
+						data.reaction && data.withoutThought && 
+						data.turnaround1 && data.turnaround2 && data.turnaround3;
+					
+					if (!isComplete) {
+						inquiryId = data.id;
+						belief = data.belief || '';
+						isTrue = data.isTrue || '';
+						absolutelyTrue = data.absolutelyTrue || '';
+						reaction = data.reaction || '';
+						withoutThought = data.withoutThought || '';
+						turnaround1 = data.turnaround1 || '';
+						turnaround2 = data.turnaround2 || '';
+						turnaround3 = data.turnaround3 || '';
+						// Set step based on progress
+						if (!belief) currentStep = visibleStep = 0;
+						else if (!isTrue) currentStep = visibleStep = 1;
+						else if (!absolutelyTrue) currentStep = visibleStep = 2;
+						else if (!reaction) currentStep = visibleStep = 3;
+						else if (!withoutThought) currentStep = visibleStep = 4;
+						else if (!turnaround1 || !turnaround2 || !turnaround3) currentStep = visibleStep = 5;
+						else currentStep = visibleStep = 6;
+					} else {
+						// If the inquiry is complete, clear localStorage and start fresh
+						localStorage.removeItem(LOCAL_STORAGE_KEY);
+						resetInquiry();
+					}
+				} else {
+					// If inquiry not found, clear localStorage and start fresh
+					localStorage.removeItem(LOCAL_STORAGE_KEY);
+					resetInquiry();
 				}
-			} catch (e) { /* ignore */ }
+			} catch (e) { 
+				console.error('Error loading saved inquiry:', e);
+				localStorage.removeItem(LOCAL_STORAGE_KEY);
+				resetInquiry();
+			}
 		}
 	});
+
+	function resetInquiry() {
+		inquiryId = null;
+		belief = '';
+		isTrue = '';
+		absolutelyTrue = '';
+		reaction = '';
+		withoutThought = '';
+		turnaround1 = '';
+		turnaround2 = '';
+		turnaround3 = '';
+		currentStep = visibleStep = 0;
+	}
 
 	async function createInquiry() {
 		const res = await fetch('/api/inquiries', {
@@ -385,12 +417,6 @@
 							Back
 						</button>
 						<div class="flex space-x-4">
-							<button 
-								on:click={copyToClipboard}
-								class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 flex items-center"
-							>
-								Copy as Markdown
-							</button>
 							<button 
 								on:click={saveInquiry}
 								disabled={isSaving}
