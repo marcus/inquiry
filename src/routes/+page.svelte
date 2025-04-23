@@ -17,6 +17,61 @@
 	let isTransitioning = false;
 	let showQuestion = true;
 
+	let inquiryId = null;
+	const LOCAL_STORAGE_KEY = 'unfinishedInquiryId';
+
+	// Try to resume unfinished inquiry on mount
+	onMount(async () => {
+		const savedId = localStorage.getItem(LOCAL_STORAGE_KEY);
+		if (savedId) {
+			try {
+				const res = await fetch(`/api/inquiries/${savedId}`);
+				if (res.ok) {
+					const data = await res.json();
+					inquiryId = data.id;
+					belief = data.belief || '';
+					isTrue = data.isTrue || '';
+					absolutelyTrue = data.absolutelyTrue || '';
+					reaction = data.reaction || '';
+					withoutThought = data.withoutThought || '';
+					turnaround1 = data.turnaround1 || '';
+					turnaround2 = data.turnaround2 || '';
+					turnaround3 = data.turnaround3 || '';
+					// Set step based on progress
+					if (!belief) currentStep = visibleStep = 0;
+					else if (!isTrue) currentStep = visibleStep = 1;
+					else if (!absolutelyTrue) currentStep = visibleStep = 2;
+					else if (!reaction) currentStep = visibleStep = 3;
+					else if (!withoutThought) currentStep = visibleStep = 4;
+					else if (!turnaround1 || !turnaround2 || !turnaround3) currentStep = visibleStep = 5;
+					else currentStep = visibleStep = 6;
+				}
+			} catch (e) { /* ignore */ }
+		}
+	});
+
+	async function createInquiry() {
+		const res = await fetch('/api/inquiries', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ belief })
+		});
+		if (res.ok) {
+			const { id } = await res.json();
+			inquiryId = id;
+			localStorage.setItem(LOCAL_STORAGE_KEY, id);
+		}
+	}
+
+	async function patchInquiry(fields) {
+		if (!inquiryId) return;
+		await fetch(`/api/inquiries/${inquiryId}`, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(fields)
+		});
+	}
+
 	function goToNextStep() {
 		if (currentStep < 6 && !isTransitioning) {
 			isTransitioning = true;
@@ -43,35 +98,55 @@
 			setTimeout(() => {
 				isTransitioning = false;
 			}, 400); // match fade duration
+			// Fallback: ensure transition is reset even if event doesn't fire
+			setTimeout(safeResetTransition, 1000);
 		}
+	}
+
+	// Fallback: always clear isTransitioning in case fade event fails
+	function safeResetTransition() {
+		if (isTransitioning) {
+			console.warn('Resetting transition state due to fallback timeout');
+			isTransitioning = false;
+		}
+	}
+
+	async function handleNextBelief() {
+		if (!inquiryId) await createInquiry();
+		await patchInquiry({ belief });
+		currentStep = visibleStep + 1; goToNextStep();
+	}
+	async function handleNextIsTrue() {
+		await patchInquiry({ isTrue });
+		currentStep = visibleStep + 1; goToNextStep();
+	}
+	async function handleNextAbsolutelyTrue() {
+		await patchInquiry({ absolutelyTrue });
+		currentStep = visibleStep + 1; goToNextStep();
+	}
+	async function handleNextReaction() {
+		await patchInquiry({ reaction });
+		currentStep = visibleStep + 1; goToNextStep();
+	}
+	async function handleNextWithoutThought() {
+		await patchInquiry({ withoutThought });
+		currentStep = visibleStep + 1; goToNextStep();
+	}
+	async function handleNextTurnarounds() {
+		await patchInquiry({ turnaround1, turnaround2, turnaround3 });
+		currentStep = visibleStep + 1;
+		goToNextStep();
 	}
 
 	async function saveInquiry() {
 		isSaving = true;
 		try {
-			const response = await fetch('/api/inquiries', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					belief,
-					isTrue,
-					absolutelyTrue,
-					reaction,
-					withoutThought,
-					turnaround1,
-					turnaround2,
-					turnaround3
-				})
+			await patchInquiry({
+				belief, isTrue, absolutelyTrue, reaction, withoutThought, turnaround1, turnaround2, turnaround3
 			});
-
-			if (response.ok) {
-				saveSuccess = true;
-				setTimeout(() => {
-					saveSuccess = false;
-				}, 3000);
-			}
+			localStorage.removeItem(LOCAL_STORAGE_KEY);
+			saveSuccess = true;
+			setTimeout(() => { saveSuccess = false; }, 3000);
 		} catch (error) {
 			console.error('Failed to save inquiry:', error);
 		} finally {
@@ -98,7 +173,7 @@
 					></textarea>
 					<div class="flex justify-end">
 						<button 
-							on:click={() => { currentStep = visibleStep + 1; goToNextStep(); }} 
+							on:click={handleNextBelief} 
 							disabled={!belief.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -126,7 +201,7 @@
 							Back
 						</button>
 						<button 
-							on:click={() => { currentStep = visibleStep + 1; goToNextStep(); }} 
+							on:click={handleNextIsTrue}
 							disabled={!isTrue.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -154,7 +229,7 @@
 							Back
 						</button>
 						<button 
-							on:click={() => { currentStep = visibleStep + 1; goToNextStep(); }} 
+							on:click={handleNextAbsolutelyTrue}
 							disabled={!absolutelyTrue.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -182,7 +257,7 @@
 							Back
 						</button>
 						<button 
-							on:click={() => { currentStep = visibleStep + 1; goToNextStep(); }} 
+							on:click={handleNextReaction}
 							disabled={!reaction.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -210,7 +285,7 @@
 							Back
 						</button>
 						<button 
-							on:click={() => { currentStep = visibleStep + 1; goToNextStep(); }} 
+							on:click={handleNextWithoutThought}
 							disabled={!withoutThought.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -262,7 +337,7 @@
 							Back
 						</button>
 						<button 
-							on:click={() => { currentStep = visibleStep + 1; goToNextStep(); }} 
+							on:click={handleNextTurnarounds}
 							disabled={!turnaround1.trim() || !turnaround2.trim() || !turnaround3.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>

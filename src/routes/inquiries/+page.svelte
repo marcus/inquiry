@@ -49,13 +49,19 @@
 			day: 'numeric'
 		});
 	}
+
+	// Helper: unfinished = missing any turnaround
+	function isUnfinished(inquiry) {
+		return !inquiry.turnaround1?.trim() || !inquiry.turnaround2?.trim() || !inquiry.turnaround3?.trim();
+	}
+
+	function resumeInquiry(id) {
+		localStorage.setItem('unfinishedInquiryId', id);
+		window.location.href = '/';
+	}
 </script>
 
 <div class="space-y-8">
-	<div class="flex justify-between items-center">
-		<h1 class="text-2xl font-light">Your Inquiries</h1>
-		<a href="/" class="text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm">New Inquiry</a>
-	</div>
 
 	{#if isLoading}
 		<div class="text-center py-12">
@@ -73,8 +79,26 @@
 			</a>
 		</div>
 	{:else}
+		<!-- Unfinished Inquiries -->
+		{#if inquiries.filter(isUnfinished).length > 0}
+			<div class="mb-8">
+				<h3 class="text-lg font-semibold mb-2 text-yellow-700">Unfinished Inquiries</h3>
+				<div class="space-y-2">
+					{#each inquiries.filter(isUnfinished) as inquiry (inquiry.id)}
+						<div class="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded px-4 py-2">
+							<div>
+								<span class="font-medium">{inquiry.belief}</span>
+								<span class="ml-2 text-xs text-yellow-700">Started {formatDate(inquiry.createdAt)}</span>
+							</div>
+							<button on:click={() => resumeInquiry(inquiry.id)} class="px-3 py-1 text-sm bg-yellow-200 text-yellow-900 rounded hover:bg-yellow-300 transition-colors duration-200">Resume</button>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{/if}
+		<!-- Finished Inquiries -->
 		<div class="space-y-4">
-			{#each inquiries as inquiry (inquiry.id)}
+			{#each inquiries.filter(inq => !isUnfinished(inq)) as inquiry (inquiry.id)}
 				<div 
 					transition:fade={{ duration: 300 }}
 					class="bg-white p-5 rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-shadow duration-200"

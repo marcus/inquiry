@@ -42,14 +42,7 @@ Created on ${formatDate(inquiry.createdAt)}`;
 
 <div class="space-y-8">
 	<div class="flex justify-between items-center mb-8">
-		<h1 class="text-2xl font-light">Inquiry</h1>
 		<div class="flex space-x-4">
-			<a 
-				href="/inquiries" 
-				class="text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm"
-			>
-				Back to all inquiries
-			</a>
 			<button 
 				on:click={copyToClipboard}
 				class="text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm"
