@@ -41,18 +41,16 @@ Created on ${formatDate(inquiry.createdAt)}`;
 </script>
 
 <div class="space-y-8">
-	<div class="flex justify-between items-center mb-8">
-		<div class="flex space-x-4">
-			<button 
-				on:click={copyToClipboard}
-				class="text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm"
-			>
-				Copy as Markdown
-			</button>
-		</div>
-	</div>
-
-	<div class="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+	<div class="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-slate-200 relative">
+		<button 
+			on:click={copyToClipboard}
+			class="absolute top-4 right-4 text-slate-500 hover:text-blue-600 transition-colors duration-200"
+			title="Copy as Markdown"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+			</svg>
+		</button>
 		<div class="space-y-2">
 			<h3 class="text-lg font-medium">Belief</h3>
 			<p>{inquiry.belief}</p>
