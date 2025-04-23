@@ -7,7 +7,7 @@
 <div class="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
 	<header class="py-6 px-4 md:px-8">
 		<div class="container mx-auto flex justify-between items-center">
-			<a href="/" class="hover:opacity-80 transition-opacity duration-200">
+			<a href="/?new=true" class="hover:opacity-80 transition-opacity duration-200">
 				<img src="/logo.png" alt="Inquiry" class="h-8" />
 			</a>
 			<div class="flex space-x-3">

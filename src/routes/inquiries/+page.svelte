@@ -90,7 +90,33 @@
 								<span class="font-medium">{inquiry.belief}</span>
 								<span class="ml-2 text-xs text-yellow-700">Started {formatDate(inquiry.createdAt)}</span>
 							</div>
-							<button on:click={() => resumeInquiry(inquiry.id)} class="px-3 py-1 text-sm bg-yellow-200 text-yellow-900 rounded hover:bg-yellow-300 transition-colors duration-200">Resume</button>
+							<div class="flex space-x-2">
+								<button on:click={() => resumeInquiry(inquiry.id)} class="px-3 py-1 text-sm bg-yellow-200 text-yellow-900 rounded hover:bg-yellow-300 transition-colors duration-200">Resume</button>
+								
+								{#if showDeleteConfirm === inquiry.id}
+									<div class="flex space-x-2">
+										<button 
+											on:click={() => deleteInquiry(inquiry.id)}
+											class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-200"
+										>
+											Confirm
+										</button>
+										<button 
+											on:click={() => showDeleteConfirm = null}
+											class="px-3 py-1 text-sm bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors duration-200"
+										>
+											Cancel
+										</button>
+									</div>
+								{:else}
+									<button 
+										on:click={() => showDeleteConfirm = inquiry.id}
+										class="px-3 py-1 text-sm bg-slate-100 text-red-600 rounded hover:bg-slate-200 transition-colors duration-200"
+									>
+										Delete
+									</button>
+								{/if}
+							</div>
 						</div>
 					{/each}
 				</div>
