@@ -243,7 +243,7 @@ Created on ${formatDate(inquiry.createdAt)}`;
 <div class="space-y-8">
 	<div class="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-slate-200 relative">
 		<button 
-			on:click={copyToClipboard}
+			onclick={copyToClipboard}
 			class="absolute top-4 right-4 text-slate-500 hover:text-blue-600 transition-colors duration-200"
 			title="Copy as Markdown"
 			aria-label="Copy inquiry as Markdown"
@@ -292,7 +292,7 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			</div>
 			{#if showGetGuidance && !guidanceExists && !isStreaming}
 				<button 
-					on:click={getAIGuidance}
+					onclick={getAIGuidance}
 					class="px-4 py-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors duration-200 text-sm shadow-sm flex items-center"
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -335,9 +335,10 @@ Created on ${formatDate(inquiry.createdAt)}`;
 				<h2 class="text-xl font-medium mb-4 pr-8">AI Guidance</h2>
 				{#if showRefreshButton}
 					<button 
-						on:click={refreshGuidance}
+						onclick={refreshGuidance}
 						class="absolute top-4 right-4 text-slate-500 hover:text-blue-600 transition-colors duration-200"
 						title="Regenerate guidance"
+						aria-label="Regenerate AI guidance"
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

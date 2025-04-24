@@ -8,14 +8,16 @@
 	const { inquiry, aiGuidance: initialGuidance } = data;
 	let aiGuidance = $state(initialGuidance?.content || null);
 	let isLoadingGuidance = $state(false);
-	let guidanceExists = $state(!!aiGuidance);
 	let streamingResponse = $state('');
 	let isStreaming = $state(false);
 	let error = $state(null);
 	
-	// Reactive declaration using proper runes mode syntax
+	// Reactive declarations using proper runes mode syntax
 	const renderedHtml = $derived(marked.parse(streamingResponse));
-
+	// Create derived values that properly track changes to aiGuidance
+	const guidanceExists = $derived(!!aiGuidance);
+	const processedGuidance = $derived(aiGuidance ? processNextBeliefs(aiGuidance) : '');
+	
 	onMount(async () => {
 		// If we already have guidance from the server, no need to check again
 		if (!guidanceExists) {
@@ -35,10 +37,8 @@
 			const data = await response.json();
 			
 			if (data.exists) {
-				guidanceExists = true;
 				aiGuidance = data.response.content;
 			} else {
-				guidanceExists = false;
 				aiGuidance = null;
 			}
 		} catch (err) {
@@ -115,7 +115,6 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			
 			// After streaming is done, set the final response
 			aiGuidance = streamingResponse;
-			guidanceExists = true;
 			isStreaming = false;
 			
 			// Refresh the guidance check to ensure it's saved properly
@@ -136,7 +135,6 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			
 			// Reset state but immediately start streaming 
 			streamingResponse = '';
-			guidanceExists = false; 
 			aiGuidance = null; 
 			isStreaming = true; 
 			
@@ -167,7 +165,6 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			
 			// After streaming is done, set the final response
 			aiGuidance = streamingResponse;
-			guidanceExists = true;
 			isStreaming = false;
 			
 			// Refresh the guidance check to ensure it's saved properly
@@ -244,32 +241,3 @@ Created on ${formatDate(inquiry.createdAt)}`;
 		showRefreshButton={true} 
 	/>
 </div>
-
-<style>
-	.markdown-content :global(h1) {
-		font-size: 1.5rem;
-		font-weight: 600;
-		margin-top: 1.5rem;
-		margin-bottom: 1rem;
-	}
-	
-	.markdown-content :global(h2) {
-		font-size: 1.25rem;
-		font-weight: 600;
-		margin-top: 1.25rem;
-		margin-bottom: 0.75rem;
-	}
-	
-	.markdown-content :global(p) {
-		margin-bottom: 0.75rem;
-	}
-	
-	.markdown-content :global(ul), .markdown-content :global(ol) {
-		margin-left: 1.5rem;
-		margin-bottom: 1rem;
-	}
-	
-	.markdown-content :global(li) {
-		margin-bottom: 0.25rem;
-	}
-</style>

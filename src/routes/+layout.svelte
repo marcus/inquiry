@@ -101,7 +101,7 @@
 							<span class="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Profile</span>
 						</a>
 						<button 
-							on:click={handleLogout}
+							onclick={handleLogout}
 							class="relative group p-2 text-slate-600 hover:text-accent-blue transition-colors duration-200 flex items-center"
 						>
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,7 +123,7 @@
 			
 			<!-- Mobile Hamburger Menu Button (hidden on desktop) -->
 			<button 
-				on:click={toggleMobileMenu}
+				onclick={toggleMobileMenu}
 				class="md:hidden p-2 text-slate-700 hover:text-accent-blue transition-colors duration-200 z-30"
 				aria-label="Toggle menu"
 			>
@@ -152,27 +152,27 @@
 				{:else if $authStore.isAuthenticated}
 					<a 
 						href="/?new=true" 
-						on:click={toggleMobileMenu}
+						onclick={toggleMobileMenu}
 						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200 border-b border-slate-200"
 					>
 						New Inquiry
 					</a>
 					<a 
 						href="/inquiries" 
-						on:click={toggleMobileMenu}
+						onclick={toggleMobileMenu}
 						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200 border-b border-slate-200"
 					>
 						View All Inquiries
 					</a>
 					<a 
 						href="/user" 
-						on:click={toggleMobileMenu}
+						onclick={toggleMobileMenu}
 						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200 border-b border-slate-200"
 					>
 						Profile
 					</a>
 					<button 
-						on:click={handleLogout}
+						onclick={handleLogout}
 						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200"
 					>
 						Logout
@@ -180,7 +180,7 @@
 				{:else}
 					<a 
 						href="/login" 
-						on:click={toggleMobileMenu}
+						onclick={toggleMobileMenu}
 						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200"
 					>
 						Login
