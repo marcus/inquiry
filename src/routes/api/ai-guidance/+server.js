@@ -72,7 +72,7 @@ ${inquiryText}`;
 
     console.log('Initializing TokenJS with OpenAI API key');
     const tokenjs = new TokenJS({
-      openaiApiKey: env.OPEN_AI_API_KEY
+      openaiApiKey: env.OPENAI_API_KEY
     });
 
     // Use the Fetch API with streaming to process the response in chunks

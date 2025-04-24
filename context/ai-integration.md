@@ -21,7 +21,7 @@ If a response already exists, always show it. There should be a subtle refresh i
 
 Use chatgpt-4o as the default model. 
 
-Assume $OPEN_AI_API_KEY is available in the environment.
+Assume $OPENAI_API_KEY is available in the environment.
 
 Use Token.js to call the LLM. 
 
