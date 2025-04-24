@@ -65,7 +65,7 @@
 		<div class="container mx-auto max-w-3xl">
 			{#if quotation.quote && showQuote}
 				<div class="relative group" transition:fade={{ duration: 400 }}>
-					<p class="font-light italic mb-1">"{quotation.quote}"</p>
+					<p class="font-light italic mb-1">{quotation.quote}</p>
 					<p class="font-light opacity-0 group-hover:opacity-100 transition-opacity duration-300">— {quotation.source}</p>
 				</div>
 			{:else if !showQuote}

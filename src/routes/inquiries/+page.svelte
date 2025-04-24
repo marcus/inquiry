@@ -85,10 +85,12 @@
 				<h3 class="text-lg font-semibold mb-2 text-yellow-700">Unfinished Inquiries</h3>
 				<div class="space-y-2">
 					{#each inquiries.filter(isUnfinished) as inquiry (inquiry.id)}
-						<div class="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded px-4 py-2">
+						<div class="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded px-4 py-2 group relative">
 							<div>
-								<span class="font-medium">{inquiry.belief}</span>
-								<span class="ml-2 text-xs text-yellow-700">Started {formatDate(inquiry.createdAt)}</span>
+								<a href={`/inquiries/${inquiry.id}`} class="block">
+									<span class="font-medium">{inquiry.belief}</span>
+									<span class="ml-2 text-xs text-yellow-700">Started {formatDate(inquiry.createdAt)}</span>
+								</a>
 							</div>
 							<div class="flex space-x-2">
 								<button on:click={() => resumeInquiry(inquiry.id)} class="px-3 py-1 text-sm bg-yellow-200 text-yellow-900 rounded hover:bg-yellow-300 transition-colors duration-200">Resume</button>
@@ -111,9 +113,12 @@
 								{:else}
 									<button 
 										on:click={() => showDeleteConfirm = inquiry.id}
-										class="px-3 py-1 text-sm bg-slate-100 text-red-600 rounded hover:bg-slate-200 transition-colors duration-200"
+										class="p-2 text-slate-400 hover:text-slate-600 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+										aria-label="Delete inquiry"
 									>
-										Delete
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+										</svg>
 									</button>
 								{/if}
 							</div>
@@ -127,20 +132,16 @@
 			{#each inquiries.filter(inq => !isUnfinished(inq)) as inquiry (inquiry.id)}
 				<div 
 					transition:fade={{ duration: 300 }}
-					class="bg-white p-5 rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-shadow duration-200"
+					class="bg-white p-5 rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-shadow duration-200 group relative"
 				>
 					<div class="flex justify-between items-start">
-						<div>
-							<h2 class="text-lg font-medium mb-2">{inquiry.belief}</h2>
+						<div class="flex-grow">
+							<a href={`/inquiries/${inquiry.id}`} class="block">
+								<h2 class="text-lg font-medium mb-2 hover:text-blue-600 transition-colors duration-200">{inquiry.belief}</h2>
+							</a>
 							<p class="text-slate-500 text-sm">{formatDate(inquiry.createdAt)}</p>
 						</div>
 						<div class="flex space-x-2">
-							<a 
-								href={`/inquiries/${inquiry.id}`}
-								class="px-3 py-1 text-sm bg-slate-100 text-slate-700 rounded hover:bg-slate-200 transition-colors duration-200"
-							>
-								View
-							</a>
 							{#if showDeleteConfirm === inquiry.id}
 								<div class="flex space-x-2">
 									<button 
@@ -159,9 +160,12 @@
 							{:else}
 								<button 
 									on:click={() => showDeleteConfirm = inquiry.id}
-									class="px-3 py-1 text-sm bg-slate-100 text-red-600 rounded hover:bg-slate-200 transition-colors duration-200"
+									class="p-2 text-slate-400 hover:text-slate-600 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+									aria-label="Delete inquiry"
 								>
-									Delete
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+									</svg>
 								</button>
 							{/if}
 						</div>
