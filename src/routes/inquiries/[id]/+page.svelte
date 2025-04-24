@@ -116,8 +116,10 @@ Created on ${formatDate(inquiry.createdAt)}`;
 				
 				const text = decoder.decode(value);
 				console.log('Received chunk:', text.substring(0, 50) + (text.length > 50 ? '...' : ''));
-				// Force reactivity by creating a new string
+				// Create a new string to force reactivity
 				streamingResponse = streamingResponse + text;
+				// Use setTimeout to give Svelte a chance to update the UI
+				await new Promise(resolve => setTimeout(resolve, 0));
 			}
 			
 			// After streaming is done, set the final response
@@ -176,8 +178,10 @@ Created on ${formatDate(inquiry.createdAt)}`;
 				
 				const text = decoder.decode(value);
 				console.log('Received refresh chunk:', text.substring(0, 50) + (text.length > 50 ? '...' : ''));
-				// Force reactivity by creating a new string
+				// Create a new string to force reactivity
 				streamingResponse = streamingResponse + text;
+				// Use setTimeout to give Svelte a chance to update the UI
+				await new Promise(resolve => setTimeout(resolve, 0));
 			}
 			
 			// After streaming is done, set the final response
