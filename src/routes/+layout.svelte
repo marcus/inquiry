@@ -6,7 +6,7 @@
 
 <div class="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
 	<header class="py-6 px-4 md:px-8">
-		<div class="container mx-auto flex justify-between items-center">
+		<div class="container mx-auto max-w-3xl flex justify-between items-center">
 			<a href="/?new=true" class="hover:opacity-80 transition-opacity duration-200">
 				<img src="/logo.png" alt="Inquiry" class="h-8" />
 			</a>
@@ -22,7 +22,7 @@
 		</div>
 	</main>
 	<footer class="py-4 px-4 md:px-8 text-slate-500 text-center text-sm">
-		<div class="container mx-auto">
+		<div class="container mx-auto max-w-3xl">
 			<p class="font-light">A tool for self-inquiry based on Byron Katie's method</p>
 		</div>
 	</footer>
