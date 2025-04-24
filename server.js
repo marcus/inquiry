@@ -156,6 +156,20 @@ async function fetchToNodeResponse(fetchResponse, res) {
         const clone = fetchResponse.clone();
         const text = await clone.text();
         log(`Error response body: ${text}`);
+        
+        // Try to get more details from headers
+        log(`Error response headers: ${JSON.stringify(Object.fromEntries([...fetchResponse.headers]), null, 2)}`);
+        
+        // Check if there's an error object in the response
+        try {
+          const errorClone = fetchResponse.clone();
+          const errorJson = await errorClone.json().catch(() => null);
+          if (errorJson) {
+            log(`Error JSON: ${JSON.stringify(errorJson, null, 2)}`);
+          }
+        } catch (jsonErr) {
+          log(`Could not parse error as JSON: ${jsonErr.message}`);
+        }
       } catch (err) {
         log(`Could not read error response: ${err.message}`);
       }
@@ -221,6 +235,7 @@ const httpServer = http.createServer(async (req, res) => {
       log(`SvelteKit response received: ${response.status}`);
     } catch (err) {
       log(`SvelteKit server.respond() error: ${err.message}\n${err.stack}`);
+      log(`Error details: ${JSON.stringify(err, Object.getOwnPropertyNames(err), 2)}`);
       res.statusCode = 500;
       res.setHeader('Content-Type', 'text/plain');
       res.end(`SvelteKit Error: ${err.message}`);

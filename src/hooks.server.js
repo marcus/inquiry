@@ -29,6 +29,22 @@ export async function handle({ event, resolve }) {
     }
   }
   
-  // Resolve the request
-  return resolve(event);
+  // Enhanced error logging for debugging 500 errors
+  try {
+    return await resolve(event);
+  } catch (err) {
+    // Log error details to server console
+    const url = event.url?.toString() || '';
+    const method = event.request?.method || '';
+    const headers = Object.fromEntries(event.request.headers.entries());
+    console.error('[SvelteKit handle error]', {
+      url,
+      method,
+      headers,
+      message: err.message,
+      stack: err.stack
+    });
+    // Optionally, return a custom error response (still 500)
+    return new Response('Internal Server Error (logged in server console)', { status: 500 });
+  }
 }
