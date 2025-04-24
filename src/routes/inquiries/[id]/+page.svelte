@@ -3,6 +3,7 @@
 	import { fade } from 'svelte/transition';
 	import { marked } from 'marked';
 	import InquirySummary from '$lib/components/InquirySummary.svelte';
+	import { processNextBeliefs } from '$lib/utils/beliefProcessor';
 	
 	let { data } = $props();
 	const { inquiry, aiGuidance: initialGuidance } = data;
@@ -16,7 +17,7 @@
 	const renderedHtml = $derived(marked.parse(streamingResponse));
 	// Create derived values that properly track changes to aiGuidance
 	const guidanceExists = $derived(!!aiGuidance);
-	const processedGuidance = $derived(aiGuidance ? processNextBeliefs(aiGuidance) : '');
+	const processedGuidance = $derived(aiGuidance ? processNextBeliefs(aiGuidance, marked.parse) : '');
 	
 	onMount(async () => {
 		// If we already have guidance from the server, no need to check again
@@ -174,63 +175,6 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			isStreaming = false;
 			console.error('Error refreshing guidance:', err);
 		}
-	}
-	
-	function getNextBeliefUrl(beliefText) {
-		// Create a URL that will pre-populate a new inquiry with this belief
-		return `/?belief=${encodeURIComponent(beliefText.trim())}`;
-	}
-	
-	// Convert potential next beliefs to links
-	function processNextBeliefs(markdown) {
-		if (!markdown) return '';
-		
-		// First convert the markdown to HTML
-		let html = marked.parse(markdown);
-		
-		// Find the "Potential Next Beliefs:" section and convert the list items to links
-		// First try to find it with a standard unordered list
-		let potentialBeliefsRegex = /<h2>Potential Next Beliefs:<\/h2>\s*<ul>([\s\S]*?)<\/ul>/i;
-		let match = html.match(potentialBeliefsRegex);
-		
-		if (match && match[1]) {
-			const listItems = match[1];
-			
-			// Replace each list item with a linked version
-			const linkedListItems = listItems.replace(/<li>(.*?)<\/li>/g, (match, belief) => {
-				return `<li><a href="${getNextBeliefUrl(belief)}" class="text-blue-600 hover:underline">${belief}</a></li>`;
-			});
-			
-			// Replace the original list items with our linked version
-			html = html.replace(listItems, linkedListItems);
-		} else {
-			// Try to find beliefs as plain text after the heading
-			potentialBeliefsRegex = /<h2>Potential Next Beliefs:<\/h2>([\s\S]*?)(?:<h|$)/i;
-			match = html.match(potentialBeliefsRegex);
-			
-			if (match && match[1]) {
-				const beliefsText = match[1].trim();
-				
-				// Split by periods, line breaks, or other potential separators
-				const beliefs = beliefsText.split(/(?:\.|\n|<br>|<p>|<\/p>)\s*/)
-					.map(belief => belief.trim())
-					.filter(belief => belief.length > 0);
-				
-				if (beliefs.length > 0) {
-					// Create a new HTML list with links
-					const linkedListItems = beliefs.map(belief => 
-						`<li><a href="${getNextBeliefUrl(belief)}" class="text-blue-600 hover:underline">${belief}</a></li>`
-					).join('');
-					
-					const newList = `<ul>${linkedListItems}</ul>`;
-					
-					// Replace the original text with our linked list
-					html = html.replace(match[1], newList);
-				}
-			}
-		}
-		
-		return html;
 	}
 </script>
 

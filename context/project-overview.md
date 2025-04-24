@@ -113,7 +113,18 @@ The UI follows a minimalist, contemplative design with:
    - Run `npm run dev` to start the development server
    - Navigate to `http://localhost:5173`
 
-4. **Key Files to Modify**
+4. **Testing**
+   - Run `npm run test:unit -- --run` to execute all tests
+   - Tests use Vitest for unit testing
+   - Key test files:
+     - `src/lib/utils/beliefProcessor.test.js` - Tests for belief suggestion parsing
+   - The test suite validates:
+     - Parsing of various AI output formats for "Potential Next Beliefs"
+     - URL generation for belief links
+     - Handling of edge cases and different text formats
+
+5. **Key Files to Modify**
    - UI/UX changes: `src/routes/+page.svelte` and `src/routes/+layout.svelte`
    - Database schema: `src/lib/server/db/schema.js`
    - API endpoints: `src/routes/api/inquiries/+server.js`
+   - Belief processing: `src/lib/utils/beliefProcessor.js`

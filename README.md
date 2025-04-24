@@ -78,6 +78,26 @@ npm run build
 npm run preview
 ```
 
+### Running Tests
+
+The application includes unit tests for critical components and utilities:
+
+```bash
+# Run all tests
+npm run test:unit -- --run
+
+# Run tests for a specific file
+npm run test:unit -- --run src/lib/utils/beliefProcessor.test.js
+
+# Run tests in watch mode during development
+npm run test:unit
+```
+
+The test suite focuses on:
+- Utility functions for processing AI-generated belief suggestions
+- Handling various markdown and plain text formats
+- Edge cases in belief parsing
+
 ## Deployment
 
 The application includes a Docker-based deployment system for easy hosting.

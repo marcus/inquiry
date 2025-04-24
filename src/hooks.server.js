@@ -37,7 +37,6 @@ export async function handle({ event, resolve }) {
  * @type {import('@sveltejs/kit').HandleServerError}
  */
 export function handleError({ error, event }) {
-  console.error("Test log from handleError");
   const url = event.url?.toString() || '';
   const method = event.request?.method || '';
   const headers = Object.fromEntries(event.request.headers.entries());
