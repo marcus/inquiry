@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { marked } from 'marked';
 	
@@ -11,6 +11,11 @@
 	let streamingResponse = '';
 	let isStreaming = false;
 	let error = null;
+	
+	// Reactive declaration using proper runes mode syntax
+	const renderedHtml = $derived(marked.parse(streamingResponse));
+
+	console.log('Component State:', { streamingResponse, isStreaming, aiGuidance, guidanceExists });
 
 	onMount(async () => {
 		// If we already have guidance from the server, no need to check again
@@ -37,11 +42,13 @@
 			if (data.exists) {
 				guidanceExists = true;
 				aiGuidance = data.response.content;
+				await tick();
 				console.log('Found existing guidance');
 			} else {
 				console.log('No existing guidance found');
 				guidanceExists = false;
 				aiGuidance = null;
+				await tick();
 			}
 		} catch (err) {
 			console.error('Error checking for existing AI guidance:', err);
@@ -116,10 +123,8 @@ Created on ${formatDate(inquiry.createdAt)}`;
 				
 				const text = decoder.decode(value);
 				console.log('Received chunk:', text.substring(0, 50) + (text.length > 50 ? '...' : ''));
-				// Create a new string to force reactivity
 				streamingResponse = streamingResponse + text;
-				// Use setTimeout to give Svelte a chance to update the UI
-				await new Promise(resolve => setTimeout(resolve, 0));
+				await tick();
 			}
 			
 			// After streaming is done, set the final response
@@ -127,13 +132,14 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			aiGuidance = streamingResponse;
 			guidanceExists = true;
 			isStreaming = false;
+			await tick();
 			
 			// Refresh the guidance check to ensure it's saved properly
 			await checkForExistingGuidance();
 		} catch (err) {
 			error = err.message || 'Failed to get AI guidance';
-			console.error('Error getting AI guidance:', err);
 			isStreaming = false;
+			console.error('Error getting AI guidance:', err);
 		}
 	}
 	
@@ -145,11 +151,11 @@ Created on ${formatDate(inquiry.createdAt)}`;
 				method: 'DELETE'
 			});
 			
-			// Reset state but immediately start streaming - force reactivity with assignments
+			// Reset state but immediately start streaming 
 			streamingResponse = '';
-			guidanceExists = false; // Hide the existing guidance
-			aiGuidance = null; // Clear the old guidance
-			isStreaming = true; // Show streaming UI
+			guidanceExists = false; 
+			aiGuidance = null; 
+			isStreaming = true; 
 			
 			// Then generate new guidance
 			console.log('Starting new guidance generation after refresh');
@@ -178,10 +184,8 @@ Created on ${formatDate(inquiry.createdAt)}`;
 				
 				const text = decoder.decode(value);
 				console.log('Received refresh chunk:', text.substring(0, 50) + (text.length > 50 ? '...' : ''));
-				// Create a new string to force reactivity
 				streamingResponse = streamingResponse + text;
-				// Use setTimeout to give Svelte a chance to update the UI
-				await new Promise(resolve => setTimeout(resolve, 0));
+				await tick();
 			}
 			
 			// After streaming is done, set the final response
@@ -189,13 +193,14 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			aiGuidance = streamingResponse;
 			guidanceExists = true;
 			isStreaming = false;
+			await tick();
 			
 			// Refresh the guidance check to ensure it's saved properly
 			await checkForExistingGuidance();
 		} catch (err) {
 			error = err.message || 'Failed to refresh AI guidance';
-			console.error('Error refreshing guidance:', err);
 			isStreaming = false;
+			console.error('Error refreshing guidance:', err);
 		}
 	}
 	
@@ -341,21 +346,22 @@ Created on ${formatDate(inquiry.createdAt)}`;
 		{#if isStreaming}
 			<div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 prose max-w-none">
 				<h2 class="text-xl font-medium mb-4">AI Guidance</h2>
-				{#if streamingResponse}
-					<div class="markdown-content">
-						{@html marked.parse(streamingResponse)}
-					</div>
-				{:else}
-					<div class="flex items-center text-slate-500">
-						<svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-							<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-							<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-						</svg>
-						Generating insight...
-					</div>
-				{/if}
+				<div class="markdown-content min-h-[2em]">
+					{@html renderedHtml}
+					{#if isStreaming && !streamingResponse}
+						<div class="flex items-center text-slate-500 mt-2">
+							<svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+							</svg>
+							Generating insight...
+						</div>
+					{/if}
+				</div>
 			</div>
-		{:else if guidanceExists && aiGuidance}
+		{/if}
+
+		{#if guidanceExists && aiGuidance}
 			<div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 prose max-w-none relative">
 				<h2 class="text-xl font-medium mb-4 pr-8">AI Guidance</h2>
 				<button 
