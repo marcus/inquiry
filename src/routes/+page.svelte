@@ -456,30 +456,30 @@
 					</button>
 					<div class="space-y-2">
 						<h3 class="text-lg font-medium">Belief</h3>
-						<p>{belief}</p>
+						<p class="text-slate-500 font-light">{belief}</p>
 					</div>
 					<div class="space-y-2">
 						<h3 class="text-lg font-medium">Is it true?</h3>
-						<p>{isTrue}</p>
+						<p class="text-slate-500 font-light">{isTrue}</p>
 					</div>
 					<div class="space-y-2">
 						<h3 class="text-lg font-medium">Can I absolutely know it's true?</h3>
-						<p>{absolutelyTrue}</p>
+						<p class="text-slate-500 font-light">{absolutelyTrue}</p>
 					</div>
 					<div class="space-y-2">
 						<h3 class="text-lg font-medium">How do I react when I believe that thought?</h3>
-						<p>{reaction}</p>
+						<p class="text-slate-500 font-light">{reaction}</p>
 					</div>
 					<div class="space-y-2">
 						<h3 class="text-lg font-medium">Who would I be without the thought?</h3>
-						<p>{withoutThought}</p>
+						<p class="text-slate-500 font-light">{withoutThought}</p>
 					</div>
 					<div class="space-y-2">
 						<h3 class="text-lg font-medium">Turnarounds</h3>
 						<ol class="list-decimal pl-6 space-y-2">
-							<li>{turnaround1}</li>
-							<li>{turnaround2}</li>
-							<li>{turnaround3}</li>
+							<li class="text-slate-500 font-light">{turnaround1}</li>
+							<li class="text-slate-500 font-light">{turnaround2}</li>
+							<li class="text-slate-500 font-light">{turnaround3}</li>
 						</ol>
 					</div>
 				</div>
