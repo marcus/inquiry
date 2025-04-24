@@ -5,30 +5,25 @@
 	
 	let { data } = $props();
 	const { inquiry, aiGuidance: initialGuidance } = data;
-	let aiGuidance = initialGuidance?.content || null;
-	let isLoadingGuidance = false;
-	let guidanceExists = !!aiGuidance;
-	let streamingResponse = '';
-	let isStreaming = false;
-	let error = null;
+	let aiGuidance = $state(initialGuidance?.content || null);
+	let isLoadingGuidance = $state(false);
+	let guidanceExists = $state(!!aiGuidance);
+	let streamingResponse = $state('');
+	let isStreaming = $state(false);
+	let error = $state(null);
 	
 	// Reactive declaration using proper runes mode syntax
 	const renderedHtml = $derived(marked.parse(streamingResponse));
-
-	console.log('Component State:', { streamingResponse, isStreaming, aiGuidance, guidanceExists });
 
 	onMount(async () => {
 		// If we already have guidance from the server, no need to check again
 		if (!guidanceExists) {
 			await checkForExistingGuidance();
-		} else {
-			console.log('Using guidance loaded from server:', aiGuidance?.substring(0, 50) + '...');
 		}
 	});
 	
 	async function checkForExistingGuidance() {
 		try {
-			console.log('Checking for existing guidance for inquiry ID:', inquiry.id);
 			const response = await fetch(`/api/ai-guidance?inquiryId=${inquiry.id}`);
 			
 			if (!response.ok) {
@@ -37,18 +32,13 @@
 			}
 			
 			const data = await response.json();
-			console.log('Guidance check response:', data);
 			
 			if (data.exists) {
 				guidanceExists = true;
 				aiGuidance = data.response.content;
-				await tick();
-				console.log('Found existing guidance');
 			} else {
-				console.log('No existing guidance found');
 				guidanceExists = false;
 				aiGuidance = null;
-				await tick();
 			}
 		} catch (err) {
 			console.error('Error checking for existing AI guidance:', err);
@@ -98,7 +88,6 @@ Created on ${formatDate(inquiry.createdAt)}`;
 		streamingResponse = '';
 		
 		try {
-			console.log('Requesting AI guidance for inquiry ID:', inquiry.id);
 			const response = await fetch('/api/ai-guidance', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -113,26 +102,20 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			const reader = response.body.getReader();
 			const decoder = new TextDecoder();
 			
-			console.log('Starting to read streaming response');
 			while (true) {
 				const { done, value } = await reader.read();
 				if (done) {
-					console.log('Stream complete');
 					break;
 				}
 				
 				const text = decoder.decode(value);
-				console.log('Received chunk:', text.substring(0, 50) + (text.length > 50 ? '...' : ''));
 				streamingResponse = streamingResponse + text;
-				await tick();
 			}
 			
 			// After streaming is done, set the final response
-			console.log('Setting final response');
 			aiGuidance = streamingResponse;
 			guidanceExists = true;
 			isStreaming = false;
-			await tick();
 			
 			// Refresh the guidance check to ensure it's saved properly
 			await checkForExistingGuidance();
@@ -145,7 +128,6 @@ Created on ${formatDate(inquiry.createdAt)}`;
 	
 	async function refreshGuidance() {
 		try {
-			console.log('Refreshing guidance for inquiry ID:', inquiry.id);
 			// Delete existing guidance first
 			await fetch(`/api/ai-guidance?inquiryId=${inquiry.id}`, {
 				method: 'DELETE'
@@ -158,8 +140,6 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			isStreaming = true; 
 			
 			// Then generate new guidance
-			console.log('Starting new guidance generation after refresh');
-			
 			const response = await fetch('/api/ai-guidance', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -168,32 +148,26 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.error || 'Failed to get AI guidance');
+				throw new Error(errorData.error || 'Failed to refresh AI guidance');
 			}
 			
 			const reader = response.body.getReader();
 			const decoder = new TextDecoder();
 			
-			console.log('Starting to read streaming response after refresh');
 			while (true) {
 				const { done, value } = await reader.read();
 				if (done) {
-					console.log('Refresh stream complete');
 					break;
 				}
 				
 				const text = decoder.decode(value);
-				console.log('Received refresh chunk:', text.substring(0, 50) + (text.length > 50 ? '...' : ''));
 				streamingResponse = streamingResponse + text;
-				await tick();
 			}
 			
 			// After streaming is done, set the final response
-			console.log('Setting final response after refresh');
 			aiGuidance = streamingResponse;
 			guidanceExists = true;
 			isStreaming = false;
-			await tick();
 			
 			// Refresh the guidance check to ensure it's saved properly
 			await checkForExistingGuidance();
@@ -213,8 +187,6 @@ Created on ${formatDate(inquiry.createdAt)}`;
 	function processNextBeliefs(markdown) {
 		if (!markdown) return '';
 		
-		console.log('Processing markdown for next beliefs');
-		
 		// First convert the markdown to HTML
 		let html = marked.parse(markdown);
 		
@@ -224,7 +196,6 @@ Created on ${formatDate(inquiry.createdAt)}`;
 		let match = html.match(potentialBeliefsRegex);
 		
 		if (match && match[1]) {
-			console.log('Found potential next beliefs section with UL');
 			const listItems = match[1];
 			
 			// Replace each list item with a linked version
@@ -240,15 +211,12 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			match = html.match(potentialBeliefsRegex);
 			
 			if (match && match[1]) {
-				console.log('Found potential next beliefs as plain text');
 				const beliefsText = match[1].trim();
 				
 				// Split by periods, line breaks, or other potential separators
 				const beliefs = beliefsText.split(/(?:\.|\n|<br>|<p>|<\/p>)\s*/)
 					.map(belief => belief.trim())
 					.filter(belief => belief.length > 0);
-				
-				console.log('Extracted beliefs:', beliefs);
 				
 				if (beliefs.length > 0) {
 					// Create a new HTML list with links
@@ -260,11 +228,7 @@ Created on ${formatDate(inquiry.createdAt)}`;
 					
 					// Replace the original text with our linked list
 					html = html.replace(match[1], newList);
-				} else {
-					console.log('No beliefs found in text');
 				}
-			} else {
-				console.log('No potential next beliefs section found');
 			}
 		}
 		
