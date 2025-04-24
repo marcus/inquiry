@@ -12,15 +12,33 @@ node_modules
 .DS_Store
 Thumbs.db
 
-# Env
+# Deployment
 .env
 .env.*
 !.env.example
 !.env.test
+*.db
+*.sqlite
+*.sqlite3
+
+# Deployment configuration
+deploy.config
+
+# Docker
+.docker
+docker-compose.override.yml
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Deployment credentials
+deploy_keys/
+*.pem
+*.key
+*.crt
 
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-
-# SQLite
-*.db

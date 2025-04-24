@@ -1,0 +1,15 @@
+# Deployment configuration example
+# Copy this file to deploy.config and update with your actual values
+# deploy.config should be gitignored and not committed to the repository
+
+# Server details
+SERVER_IP="your.server.ip.address"
+SERVER_USER="your_username"
+SERVER_DIR="/path/to/deployment/directory"
+DOMAIN_NAME="your-domain.com"
+
+# Docker registry
+DOCKER_REGISTRY="ghcr.io"
+DOCKER_USERNAME="your_github_username"
+DOCKER_IMAGE="inquiry"
+DOCKER_TAG="web-latest"

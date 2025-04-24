@@ -44,7 +44,7 @@ npm install
 Create a `.env` file in the root directory with:
 
 ```
-DATABASE_URL=local.db
+DATABASE_URL=inquiry.db
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 

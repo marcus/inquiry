@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
 
 // Initialize the database connection
-const sqlite = new Database('local.db');
+const sqlite = new Database('inquiry.db');
 const db = drizzle(sqlite);
 
 // Run this script to migrate the database

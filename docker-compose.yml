@@ -1,0 +1,29 @@
+services:
+  web:
+    image: ${DOCKER_REGISTRY:-ghcr.io}/${DOCKER_USERNAME:-marcus}/${DOCKER_IMAGE:-inquiry}:${DOCKER_TAG:-web-latest}
+    ports:
+      - "${PORT:-5020}:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DATABASE_URL=/app/db/inquiry.db
+      - ORIGIN=https://haplab.com
+    volumes:
+      - ./db:/app/db
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  db_data:

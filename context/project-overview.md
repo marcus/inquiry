@@ -103,7 +103,7 @@ The UI follows a minimalist, contemplative design with:
 ## Getting Started for Developers
 
 1. **Setup Environment**
-   - Create a `.env` file with `DATABASE_URL=local.db`
+   - Create a `.env` file with `DATABASE_URL=inquiry.db`
    - Run `npm install` to install dependencies
 
 2. **Database Setup**
