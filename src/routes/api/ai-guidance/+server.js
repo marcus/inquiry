@@ -78,61 +78,66 @@ ${inquiryText}`;
 
     // Use the Fetch API with streaming to process the response in chunks
     console.log('Setting up streaming response');
-    const response = new Response(
-      new ReadableStream({
-        async start(controller) {
-          try {
-            let completedResponse = '';
-            
-            console.log('Calling OpenAI API with model:', aiConfig.model);
-            const result = await tokenjs.chat.completions.create({
-              stream: true,
-              provider: aiConfig.provider,
-              model: aiConfig.model,
-              messages: [
-                {
-                  role: 'user',
-                  content: prompt,
-                }
-              ],
-            });
-            
-            console.log('Stream started, processing chunks');
-            for await (const part of result) {
-              const content = part.choices[0]?.delta?.content || '';
-              completedResponse += content;
-              
-              // Encode and enqueue the chunk
-              if (content) {
-                controller.enqueue(new TextEncoder().encode(content));
-              }
+    
+    // Create a new TransformStream for better streaming control
+    const { readable, writable } = new TransformStream();
+    const writer = writable.getWriter();
+    
+    // Start processing in the background
+    (async () => {
+      try {
+        let completedResponse = '';
+        
+        console.log('Calling OpenAI API with model:', aiConfig.model);
+        const result = await tokenjs.chat.completions.create({
+          stream: true,
+          provider: aiConfig.provider,
+          model: aiConfig.model,
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
             }
-            
-            console.log('Stream complete, saving response to database');
-            // Save the completed response to the database
-            await db.insert(aiResponses).values({
-              inquiryId: inquiryId,
-              content: completedResponse
-            });
-            
-            console.log('Response saved, closing stream');
-            controller.close();
-          } catch (error) {
-            console.error('Error in AI guidance generation:', error);
-            controller.error(error);
+          ],
+        });
+        
+        console.log('Stream started, processing chunks');
+        for await (const part of result) {
+          const content = part.choices[0]?.delta?.content || '';
+          completedResponse += content;
+          
+          // Encode and send the chunk immediately
+          if (content) {
+            await writer.write(new TextEncoder().encode(content));
+            // Flush after each chunk to ensure immediate delivery
+            await writer.ready;
           }
         }
-      }),
-      {
-        headers: {
-          'Content-Type': 'text/plain',
-          'Cache-Control': 'no-cache',
-          'Connection': 'keep-alive'
-        }
+        
+        console.log('Stream complete, saving response to database');
+        // Save the completed response to the database
+        await db.insert(aiResponses).values({
+          inquiryId: inquiryId,
+          content: completedResponse
+        });
+        
+        console.log('Response saved, closing stream');
+        await writer.close();
+      } catch (error) {
+        console.error('Error in AI guidance generation:', error);
+        writer.abort(error);
       }
-    );
+    })();
     
-    return response;
+    // Return the readable stream immediately
+    return new Response(readable, {
+      headers: {
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'no-cache, no-transform',
+        'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no' // Disable Nginx buffering
+      }
+    });
   } catch (error) {
     console.error('Error in AI guidance endpoint:', error);
     return new Response(JSON.stringify({ error: 'Failed to generate AI guidance' }), {

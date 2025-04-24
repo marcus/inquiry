@@ -6,6 +6,7 @@
 	import { authStore, fetchCurrentUser, logout } from '$lib/stores/authStore';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { uiConfig } from '$lib/config';
 	
 	let { children } = $props();
 	let quotation = $state({ quote: '', source: '' });
@@ -48,8 +49,8 @@
 		// Initial quotation
 		quotation = getRandomQuotation();
 		
-		// Set up interval to rotate quotes every 20 seconds
-		quotationInterval = setInterval(rotateQuotation, 20000);
+		// Set up interval to rotate quotes using the interval from config
+		quotationInterval = setInterval(rotateQuotation, uiConfig.quotationRotationInterval);
 		
 		// Fetch current user
 		fetchCurrentUser();
