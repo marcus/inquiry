@@ -260,18 +260,28 @@
 
 <div class="space-y-8">
 	<div class="relative min-h-[300px]">
+		{#if belief && visibleStep >= 1 && visibleStep <= 5 && !forceShowSummary}
+			<div class="w-full mb-8">
+				<div class="bg-white rounded-lg shadow-inner p-5 border border-slate-100">
+					<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+				</div>
+			</div>
+		{/if}
+		
 		{#if showQuestion && !forceShowSummary}
 			<div transition:fade={{ duration: 400 }} on:outroend={handleFadeOutEnd} on:introend={handleFadeInEnd} class="absolute w-full">
 				{#if visibleStep === 0}
 					<h2 class="text-xl font-light mb-6 text-center">What belief would you like to examine?</h2>
-					<textarea 
-						bind:value={belief} 
-						class="w-full p-4 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
-						placeholder="Enter your belief here..."
-					></textarea>
+					<div class="space-y-4">
+						<textarea 
+							bind:value={belief} 
+							class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
+							placeholder="Enter your belief here..."
+						></textarea>
+					</div>
 					<div class="flex justify-end mt-6">
 						<button 
-							on:click={handleNextBelief} 
+							on:click={handleNextBelief}
 							disabled={!belief.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -279,13 +289,6 @@
 						</button>
 					</div>
 				{:else if visibleStep === 1}
-					{#if belief}
-						<div class="w-full px-4 md:px-8">
-							<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
-								<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
-							</div>
-						</div>
-					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Is it true?</h2>
 						<textarea 
@@ -294,7 +297,7 @@
 							placeholder="Your answer..."
 						></textarea>
 					</div>
-					<div class="flex justify-between mt-12">
+					<div class="flex justify-between mt-6">
 						<button 
 							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
@@ -311,13 +314,6 @@
 						</button>
 					</div>
 				{:else if visibleStep === 2}
-					{#if belief}
-						<div class="w-full px-4 md:px-8">
-							<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
-								<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
-							</div>
-						</div>
-					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Can I absolutely know it's true?</h2>
 						<textarea 
@@ -343,13 +339,6 @@
 						</button>
 					</div>
 				{:else if visibleStep === 3}
-					{#if belief}
-						<div class="w-full px-4 md:px-8">
-							<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
-								<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
-							</div>
-						</div>
-					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">How do I react when I believe that thought?</h2>
 						<textarea 
@@ -375,13 +364,6 @@
 						</button>
 					</div>
 				{:else if visibleStep === 4}
-					{#if belief}
-						<div class="w-full px-4 md:px-8">
-							<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
-								<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
-							</div>
-						</div>
-					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Who would I be without the thought?</h2>
 						<textarea 
@@ -407,13 +389,6 @@
 						</button>
 					</div>
 				{:else if visibleStep === 5}
-					{#if belief}
-						<div class="w-full px-4 md:px-8">
-							<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
-								<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
-							</div>
-						</div>
-					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-6 text-center">Write three turnarounds for your belief</h2>
 						<div class="space-y-4 md:space-y-0 md:grid md:grid-cols-3 md:gap-4">
