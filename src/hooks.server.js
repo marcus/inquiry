@@ -28,23 +28,30 @@ export async function handle({ event, resolve }) {
       }
     }
   }
-  
-  // Enhanced error logging for debugging 500 errors
-  try {
-    return await resolve(event);
-  } catch (err) {
-    // Log error details to server console
-    const url = event.url?.toString() || '';
-    const method = event.request?.method || '';
-    const headers = Object.fromEntries(event.request.headers.entries());
-    console.error('[SvelteKit handle error]', {
-      url,
-      method,
-      headers,
-      message: err.message,
-      stack: err.stack
-    });
-    // Optionally, return a custom error response (still 500)
-    return new Response('Internal Server Error (logged in server console)', { status: 500 });
-  }
+  // Let errors bubble up to SvelteKit's handleError
+  return await resolve(event);
+}
+
+/**
+ * SvelteKit handleError hook for logging uncaught errors
+ * @type {import('@sveltejs/kit').HandleServerError}
+ */
+export function handleError({ error, event }) {
+  console.error("Test log from handleError");
+  const url = event.url?.toString() || '';
+  const method = event.request?.method || '';
+  const headers = Object.fromEntries(event.request.headers.entries());
+  console.error('[SvelteKit handleError hook]', {
+    url,
+    method,
+    headers,
+    message: error.message,
+    stack: error.stack
+  });
+  // Optionally, return a custom error object for the error page
+  return {
+    message: error.message,
+    code: error.code || 'UNKNOWN',
+    stack: error.stack
+  };
 }

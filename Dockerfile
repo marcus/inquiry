@@ -27,7 +27,7 @@ RUN rm -rf node_modules/better-sqlite3 && \
     npm install better-sqlite3 --build-from-source
 
 # Build the application
-RUN npm run build
+RUN npx dotenv -e .env -- npm run build
 
 # Production stage
 FROM node:20-slim
@@ -48,9 +48,8 @@ RUN useradd -m -r appuser && \
 
 # Copy built application from builder stage
 COPY --from=builder --chown=appuser:appuser /app/package*.json ./
-COPY --from=builder --chown=appuser:appuser /app/.svelte-kit ./.svelte-kit
+COPY --from=builder --chown=appuser:appuser /app/build ./build
 COPY --from=builder --chown=appuser:appuser /app/node_modules ./node_modules
-COPY --from=builder --chown=appuser:appuser /app/server.js ./
 
 # Switch to non-root user
 USER appuser
@@ -69,5 +68,5 @@ ENV PORT=3000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:3000/health || exit 1
 
-# Command to run the app
-CMD ["node", "server.js"]
+# Command to run the app using the adapter-node output
+CMD ["node", "build/index.js"]

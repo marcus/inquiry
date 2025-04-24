@@ -1,6 +1,3 @@
-// This file serves as the entry point for the Node.js application
-// It's equivalent to wsgi.py in a Flask application
-
 import { Server } from './.svelte-kit/output/server/index.js';
 import http from 'http';
 import { Readable } from 'stream';
@@ -9,8 +6,24 @@ import path from 'path';
 
 const PORT = process.env.PORT || 3000;
 
-// Setup logging
-const logFile = fs.createWriteStream('/app/server.log', { flags: 'a' });
+// Determine log file path: use /app/server.log in Docker, ./server.log locally
+let logFilePath = '/app/server.log';
+try {
+  // Check if /app exists and is writable
+  fs.accessSync('/app', fs.constants.W_OK);
+} catch {
+  // If not, use current working directory
+  logFilePath = path.join(process.cwd(), 'server.log');
+}
+const logFile = fs.createWriteStream(logFilePath, { flags: 'a' });
+
+// Redirect console.error to logFile as well as stderr
+const origConsoleError = console.error;
+console.error = function (...args) {
+  origConsoleError.apply(console, args);
+  logFile.write(args.map(a => (typeof a === 'string' ? a : JSON.stringify(a, null, 2))).join(' ') + '\n');
+};
+
 function log(message) {
   const timestamp = new Date().toISOString();
   const formattedMessage = `${timestamp} - ${message}\n`;
