@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { inquiries, aiResponses } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { env } from '$env/dynamic/private';
+import { aiConfig } from '$lib/config';
 
 // POST endpoint to generate AI guidance
 export async function POST({ request }) {
@@ -83,11 +84,11 @@ ${inquiryText}`;
           try {
             let completedResponse = '';
             
-            console.log('Calling OpenAI API with model: gpt-4o');
+            console.log('Calling OpenAI API with model:', aiConfig.model);
             const result = await tokenjs.chat.completions.create({
               stream: true,
-              provider: 'openai',
-              model: 'gpt-4o',
+              provider: aiConfig.provider,
+              model: aiConfig.model,
               messages: [
                 {
                   role: 'user',
