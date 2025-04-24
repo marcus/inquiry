@@ -72,14 +72,14 @@
       <button
         type="submit"
         disabled={isSubmitting}
-        class="w-full py-2 px-4 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+        class="w-full py-2 px-4 bg-accent-blue text-white rounded-md hover:bg-accent-blue/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
       >
         {isSubmitting ? 'Logging In...' : 'Log In'}
       </button>
     </div>
     
     <div class="text-center text-sm text-slate-500 mt-4">
-      Don't have an account? <a href="/signup" class="text-blue-600 hover:underline">Sign up</a>
+      Don't have an account? <a href="/signup" class="text-accent-blue hover:text-accent-blue/80 no-underline">Sign up</a>
     </div>
   </form>
 </div>

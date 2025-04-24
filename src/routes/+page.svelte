@@ -282,15 +282,40 @@
 
 <div class="space-y-8">
 	<div class="relative min-h-[300px]">
-		{#if $authStore.isAuthenticated === false && !$authStore.loading && currentStep === 0 && !belief}
-			<div class="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-md">
-				<p class="text-blue-700 text-sm">
-					<span class="font-medium">Welcome to Inquiry!</span> Consider <a href="/signup" class="text-blue-600 underline hover:text-blue-800">creating an account</a> to save your inquiries and access them across devices.
-				</p>
+		{#if !$authStore.isAuthenticated && !$authStore.loading}
+			<div class="bg-white p-8 rounded-lg shadow-md">
+				<h1 class="text-2xl font-light text-center mb-6">Welcome to Inquiry</h1>
+				
+				<div class="prose prose-slate mx-auto">
+					<p class="text-center mb-6">
+						Inquiry is a tool for self-reflection based on Byron Katie's method of inquiry, a structured process for examining and questioning stressful thoughts.
+					</p>
+					
+					<div class="bg-accent-blue/10 border border-accent-blue/20 rounded-md p-6 mb-8">
+						<h2 class="text-xl font-light text-accent-blue mb-3">How It Works</h2>
+						<ol class="text-accent-blue space-y-2 mb-4">
+							<li>Enter a belief that causes you stress or suffering</li>
+							<li>Answer four simple questions about that belief</li>
+							<li>Explore alternative perspectives through turnarounds</li>
+							<li>Receive a summary of your inquiry and optional AI guidance</li>
+						</ol>
+						<p class="text-accent-blue">This process can help you identify and question thoughts that cause suffering.</p>
+					</div>
+					
+					<div class="text-center">
+						<p class="mb-4">To begin your journey of self-inquiry, please create an account or log in.</p>
+						<div class="flex justify-center space-x-4">
+							<a href="/signup" class="px-6 py-3 bg-slate-700 text-white rounded-md hover:bg-slate-800 transition-colors duration-200 no-underline">
+								Create an Account
+							</a>
+							<a href="/login" class="px-6 py-3 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-50 transition-colors duration-200 no-underline">
+								Log In
+							</a>
+						</div>
+					</div>
+				</div>
 			</div>
-		{/if}
-		
-		{#if belief && visibleStep >= 1 && visibleStep <= 5 && !forceShowSummary}
+		{:else if belief && visibleStep >= 1 && visibleStep <= 5 && !forceShowSummary}
 			<div class="w-full mb-8">
 				<div class="bg-white rounded-lg shadow-inner p-5 border border-slate-100">
 					<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
@@ -298,7 +323,7 @@
 			</div>
 		{/if}
 		
-		{#if showQuestion && !forceShowSummary}
+		{#if showQuestion && !forceShowSummary && $authStore.isAuthenticated}
 			<div transition:fade={{ duration: 400 }} on:outroend={handleFadeOutEnd} on:introend={handleFadeInEnd} class="absolute w-full">
 				{#if visibleStep === 0}
 					<h2 class="text-xl font-light mb-6 text-center">What belief would you like to examine?</h2>

@@ -27,9 +27,17 @@ export async function GET({ locals }) {
 
 export async function POST({ request, locals }) {
   try {
+    // Require authentication to create inquiries
+    if (!locals.user) {
+      return new Response(JSON.stringify({ error: 'Authentication required to create inquiries' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     const inquiry = await request.json();
     const result = await db.insert(inquiries).values({
-      userId: locals.user?.id || null, // Associate with user if authenticated
+      userId: locals.user.id, // Associate with authenticated user
       belief: inquiry.belief || '',
       isTrue: inquiry.isTrue || null,
       absolutelyTrue: inquiry.absolutelyTrue || null,

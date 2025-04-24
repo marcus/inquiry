@@ -84,13 +84,13 @@
     <div class="border-b border-slate-200 mb-6">
       <div class="flex space-x-4">
         <button
-          class={`py-2 px-4 border-b-2 ${activeTab === 'profile' ? 'border-slate-700 text-slate-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          class={`py-2 px-4 border-b-2 ${activeTab === 'profile' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500 hover:text-accent-blue'}`}
           on:click={() => activeTab = 'profile'}
         >
           Profile
         </button>
         <button
-          class={`py-2 px-4 border-b-2 ${activeTab === 'security' ? 'border-slate-700 text-slate-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          class={`py-2 px-4 border-b-2 ${activeTab === 'security' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500 hover:text-accent-blue'}`}
           on:click={() => activeTab = 'security'}
         >
           Security
@@ -168,7 +168,7 @@
             <button
               type="submit"
               disabled={isSubmitting}
-              class="py-2 px-4 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              class="py-2 px-4 bg-accent-blue text-white rounded-md hover:bg-accent-blue/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
               {isSubmitting ? 'Changing Password...' : 'Change Password'}
             </button>
