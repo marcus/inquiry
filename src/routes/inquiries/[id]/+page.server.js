@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { inquiries } from '$lib/server/db/schema';
+import { inquiries, aiResponses } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
@@ -17,8 +17,19 @@ export async function load({ params }) {
       throw error(404, 'Inquiry not found');
     }
     
+    // Also fetch any AI guidance for this inquiry
+    const guidance = await db
+      .select()
+      .from(aiResponses)
+      .where(eq(aiResponses.inquiryId, id))
+      .orderBy(aiResponses.createdAt, 'desc')
+      .limit(1);
+    
+    console.log('Server load: Found guidance for inquiry', id, guidance.length > 0);
+    
     return {
-      inquiry: inquiry[0]
+      inquiry: inquiry[0],
+      aiGuidance: guidance.length > 0 ? guidance[0] : null
     };
   } catch (err) {
     console.error('Error loading inquiry:', err);

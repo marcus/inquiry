@@ -34,6 +34,8 @@
 	},
 	"dependencies": {
 		"better-sqlite3": "^11.8.0",
-		"drizzle-orm": "^0.40.0"
+		"drizzle-orm": "^0.40.0",
+		"marked": "^15.0.10",
+		"token.js": "^0.7.1"
 	}
 }

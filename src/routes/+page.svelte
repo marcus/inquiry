@@ -28,6 +28,16 @@
 	$: if (browser && $page.url.searchParams.get('new') === 'true') {
 		handleNewInquiryRequest();
 	}
+	
+	// Watch for belief parameter in URL
+	$: if (browser && $page.url.searchParams.get('belief') && !inquiryId) {
+		const urlBelief = $page.url.searchParams.get('belief');
+		if (urlBelief.trim()) {
+			belief = decodeURIComponent(urlBelief);
+			// Clear the URL parameter after setting the belief
+			goto('/', { replaceState: true });
+		}
+	}
 
 	// Handle the new inquiry request from URL parameter
 	async function handleNewInquiryRequest() {
@@ -82,6 +92,16 @@
 				console.error('Error loading saved inquiry:', e);
 				localStorage.removeItem(LOCAL_STORAGE_KEY);
 				resetInquiry();
+			}
+		}
+		
+		// Check if there's a belief in the URL query params
+		if (browser && $page.url.searchParams.get('belief') && !inquiryId) {
+			const urlBelief = $page.url.searchParams.get('belief');
+			if (urlBelief.trim()) {
+				belief = decodeURIComponent(urlBelief);
+				// Clear the URL parameter after setting the belief
+				goto('/', { replaceState: true });
 			}
 		}
 	});

@@ -12,3 +12,10 @@ export const inquiries = sqliteTable('inquiries', {
   turnaround3: text('turnaround3'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
 });
+
+export const aiResponses = sqliteTable('ai_responses', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  inquiryId: integer('inquiry_id').notNull(),
+  content: text('content').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
+});

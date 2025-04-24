@@ -9,6 +9,8 @@ A single-page application designed to guide users through Byron Katie's method o
 - Minimalist, contemplative UI with generous whitespace
 - Ability to copy inquiry to clipboard in Markdown format
 - View and manage past inquiries
+- AI guidance that provides insights on completed inquiries
+- Smart linking of suggested follow-up beliefs for deeper inquiry
 
 ## Project Structure
 
@@ -43,7 +45,10 @@ Create a `.env` file in the root directory with:
 
 ```
 DATABASE_URL=local.db
+OPEN_AI_API_KEY=your_openai_api_key_here
 ```
+
+You'll need to get your OpenAI API key from [OpenAI's platform](https://platform.openai.com/) to use the AI guidance feature.
 
 4. Set up the database:
 
@@ -84,6 +89,19 @@ npm run preview
 3. **Turnarounds**: Write three turnarounds for the belief
 4. **Summary**: Review your inquiry and save or copy as Markdown
 5. **Inquiries Index**: View, revisit, or delete past inquiries
+
+## AI Guidance Feature
+
+The Inquiry app includes AI guidance for completed inquiries:
+
+1. After completing an inquiry, view it and click the "Get Guidance" button
+2. The app will send your inquiry to OpenAI's GPT-4o model
+3. Responses are streamed in real-time and displayed as formatted markdown
+4. The AI provides insights about your inquiry process and suggestions
+5. Potential next beliefs are automatically converted to clickable links
+6. Click any suggested belief to start a new inquiry with that belief pre-populated
+
+This feature helps deepen your inquiry practice by providing thoughtful reflection and suggestions for further exploration.
 
 ## License
 
