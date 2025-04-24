@@ -280,7 +280,9 @@
 					</div>
 				{:else if visibleStep === 1}
 					{#if belief}
-						<p class="text-lg text-center p-4 italic font-medium border-b border-slate-200 pb-4 text-blue-700">{belief}</p>
+						<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
+							<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+						</div>
 					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Is it true?</h2>
@@ -308,7 +310,9 @@
 					</div>
 				{:else if visibleStep === 2}
 					{#if belief}
-						<p class="text-lg text-center p-4 italic font-medium border-b border-slate-200 pb-4 text-blue-700">{belief}</p>
+						<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
+							<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+						</div>
 					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Can I absolutely know it's true?</h2>
@@ -336,7 +340,9 @@
 					</div>
 				{:else if visibleStep === 3}
 					{#if belief}
-						<p class="text-lg text-center p-4 italic font-medium border-b border-slate-200 pb-4 text-blue-700">{belief}</p>
+						<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
+							<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+						</div>
 					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">How do I react when I believe that thought?</h2>
@@ -364,7 +370,9 @@
 					</div>
 				{:else if visibleStep === 4}
 					{#if belief}
-						<p class="text-lg text-center p-4 italic font-medium border-b border-slate-200 pb-4 text-blue-700">{belief}</p>
+						<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
+							<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+						</div>
 					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Who would I be without the thought?</h2>
@@ -392,7 +400,9 @@
 					</div>
 				{:else if visibleStep === 5}
 					{#if belief}
-						<p class="text-lg text-center p-4 italic font-medium border-b border-slate-200 pb-4 text-blue-700">{belief}</p>
+						<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
+							<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+						</div>
 					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-6 text-center">Write three turnarounds for your belief</h2>
