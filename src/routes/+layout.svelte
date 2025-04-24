@@ -2,6 +2,7 @@
 	import '../app.css';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, slide, fly } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 	import { getRandomQuotation } from '$lib/utils/quotations';
 	import { authStore, fetchCurrentUser, logout } from '$lib/stores/authStore';
 	import { goto } from '$app/navigation';
@@ -9,20 +10,20 @@
 	import { uiConfig } from '$lib/config';
 	
 	let { children } = $props();
-	let quotation = $state({ quote: '', source: '' });
-	let showQuote = $state(true);
+	let quotation = $state(getRandomQuotation());
+	let visible = $state(true);
 	let quotationInterval;
 	let isMobileMenuOpen = $state(false);
 	
 	function rotateQuotation() {
-		// Fade out current quote
-		showQuote = false;
+		// Hide current quotation
+		visible = false;
 		
-		// Wait for fade out, then change quote and fade in
+		// After fade out, change quotation and fade in
 		setTimeout(() => {
 			quotation = getRandomQuotation();
-			showQuote = true;
-		}, 400); // Match fade duration
+			visible = true;
+		}, 500);
 	}
 	
 	async function handleLogout() {
@@ -198,16 +199,17 @@
 	</main>
 	<footer class="py-4 px-4 md:px-8 text-slate-500 text-center text-sm">
 		<div class="container mx-auto max-w-3xl">
-			{#if quotation.quote && showQuote}
-				<div class="relative group" transition:fade={{ duration: 400 }}>
-					<p class="font-light italic mb-1">{quotation.quote}</p>
-					<p class="font-light opacity-0 group-hover:opacity-100 transition-opacity duration-300">— {quotation.source}</p>
-				</div>
-			{:else if !showQuote}
-				<div class="h-12"></div> <!-- Placeholder to maintain height during transition -->
-			{:else}
-				<p class="font-light">A tool for self-inquiry based on Byron Katie's method</p>
-			{/if}
+			<div class="h-24 relative overflow-hidden"> <!-- Increased height for longer quotes -->
+				{#if visible}
+					<div 
+						class="absolute inset-0 flex flex-col justify-center"
+						transition:fly={{ y: -30, duration: 2000, easing: quintOut }}
+					>
+						<p class="font-light italic mb-1">{quotation.quote}</p>
+						<p class="font-light opacity-0 hover:opacity-100 transition-opacity duration-2000">— {quotation.source}</p>
+					</div>
+				{/if}
+			</div>
 		</div>
 	</footer>
 </div>
