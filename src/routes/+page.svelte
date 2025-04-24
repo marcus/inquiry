@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
+	import InquirySummary from '$lib/components/InquirySummary.svelte';
 
 	let currentStep = 0;
 	let visibleStep = 0;
@@ -464,46 +465,25 @@
 		{#if forceShowSummary || visibleStep === 6}
 			<div class="w-full" transition:fade={{ duration: 400 }}>
 				<h2 class="text-xl font-light mb-6 text-center">Inquiry Summary</h2>
-				<div class="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-slate-200 relative">
-					<button 
-						on:click={copyToClipboard}
-						class="absolute top-4 right-4 text-slate-500 hover:text-blue-600 transition-colors duration-200"
-						title="Copy as Markdown"
-						aria-label="Copy inquiry as Markdown"
-					>
-						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-						</svg>
-					</button>
-					<div class="space-y-2">
-						<h3 class="text-lg font-medium">Belief</h3>
-						<p class="text-slate-500 font-light">{belief}</p>
-					</div>
-					<div class="space-y-2">
-						<h3 class="text-lg font-medium">Is it true?</h3>
-						<p class="text-slate-500 font-light">{isTrue}</p>
-					</div>
-					<div class="space-y-2">
-						<h3 class="text-lg font-medium">Can I absolutely know it's true?</h3>
-						<p class="text-slate-500 font-light">{absolutelyTrue}</p>
-					</div>
-					<div class="space-y-2">
-						<h3 class="text-lg font-medium">How do I react when I believe that thought?</h3>
-						<p class="text-slate-500 font-light">{reaction}</p>
-					</div>
-					<div class="space-y-2">
-						<h3 class="text-lg font-medium">Who would I be without the thought?</h3>
-						<p class="text-slate-500 font-light">{withoutThought}</p>
-					</div>
-					<div class="space-y-2">
-						<h3 class="text-lg font-medium">Turnarounds</h3>
-						<ol class="list-decimal pl-6 space-y-2">
-							<li class="text-slate-500 font-light">{turnaround1}</li>
-							<li class="text-slate-500 font-light">{turnaround2}</li>
-							<li class="text-slate-500 font-light">{turnaround3}</li>
-						</ol>
-					</div>
-				</div>
+				
+				<!-- Use the reusable InquirySummary component -->
+				<InquirySummary 
+					inquiry={{
+						id: inquiryId,
+						belief,
+						isTrue,
+						absolutelyTrue,
+						reaction,
+						withoutThought,
+						turnaround1,
+						turnaround2,
+						turnaround3,
+						createdAt: new Date().toISOString()
+					}}
+					showGetGuidance={!!inquiryId}
+					showRefreshButton={true}
+				/>
+				
 				<div class="flex justify-start mt-6">
 					<button 
 						on:click={() => { forceShowSummary = false; currentStep = 5; visibleStep = 5; }}
