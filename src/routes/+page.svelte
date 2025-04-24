@@ -280,8 +280,10 @@
 					</div>
 				{:else if visibleStep === 1}
 					{#if belief}
-						<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
-							<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+						<div class="w-full px-4 md:px-8">
+							<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
+								<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+							</div>
 						</div>
 					{/if}
 					<div class="space-y-4">
@@ -310,8 +312,10 @@
 					</div>
 				{:else if visibleStep === 2}
 					{#if belief}
-						<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
-							<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+						<div class="w-full px-4 md:px-8">
+							<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
+								<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+							</div>
 						</div>
 					{/if}
 					<div class="space-y-4">
@@ -340,8 +344,10 @@
 					</div>
 				{:else if visibleStep === 3}
 					{#if belief}
-						<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
-							<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+						<div class="w-full px-4 md:px-8">
+							<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
+								<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+							</div>
 						</div>
 					{/if}
 					<div class="space-y-4">
@@ -370,8 +376,10 @@
 					</div>
 				{:else if visibleStep === 4}
 					{#if belief}
-						<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
-							<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+						<div class="w-full px-4 md:px-8">
+							<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
+								<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+							</div>
 						</div>
 					{/if}
 					<div class="space-y-4">
@@ -400,8 +408,10 @@
 					</div>
 				{:else if visibleStep === 5}
 					{#if belief}
-						<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
-							<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+						<div class="w-full px-4 md:px-8">
+							<div class="bg-white rounded-lg shadow-inner p-5 mb-8 border border-slate-100">
+								<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+							</div>
 						</div>
 					{/if}
 					<div class="space-y-4">

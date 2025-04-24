@@ -53,35 +53,35 @@ Created on ${formatDate(inquiry.createdAt)}`;
 		</button>
 		<div class="space-y-2">
 			<h3 class="text-lg font-medium">Belief</h3>
-			<p>{inquiry.belief}</p>
+			<p class="text-slate-500 font-light">{inquiry.belief}</p>
 		</div>
 		
 		<div class="space-y-2">
 			<h3 class="text-lg font-medium">Is it true?</h3>
-			<p>{inquiry.isTrue}</p>
+			<p class="text-slate-500 font-light">{inquiry.isTrue}</p>
 		</div>
 		
 		<div class="space-y-2">
 			<h3 class="text-lg font-medium">Can I absolutely know it's true?</h3>
-			<p>{inquiry.absolutelyTrue}</p>
+			<p class="text-slate-500 font-light">{inquiry.absolutelyTrue}</p>
 		</div>
 		
 		<div class="space-y-2">
 			<h3 class="text-lg font-medium">How do I react when I believe that thought?</h3>
-			<p>{inquiry.reaction}</p>
+			<p class="text-slate-500 font-light">{inquiry.reaction}</p>
 		</div>
 		
 		<div class="space-y-2">
 			<h3 class="text-lg font-medium">Who would I be without the thought?</h3>
-			<p>{inquiry.withoutThought}</p>
+			<p class="text-slate-500 font-light">{inquiry.withoutThought}</p>
 		</div>
 		
 		<div class="space-y-2">
 			<h3 class="text-lg font-medium">Turnarounds</h3>
 			<ol class="list-decimal pl-6 space-y-2">
-				<li>{inquiry.turnaround1}</li>
-				<li>{inquiry.turnaround2}</li>
-				<li>{inquiry.turnaround3}</li>
+				<li class="text-slate-500 font-light">{inquiry.turnaround1}</li>
+				<li class="text-slate-500 font-light">{inquiry.turnaround2}</li>
+				<li class="text-slate-500 font-light">{inquiry.turnaround3}</li>
 			</ol>
 		</div>
 		
