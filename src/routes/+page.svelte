@@ -1,5 +1,5 @@
 <script>
-	import { fade } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
@@ -22,6 +22,7 @@
 	let isTransitioning = false;
 	let showQuestion = true;
 	let forceShowSummary = false;
+	let showInquiryGuidance = false;
 
 	let inquiryId = null;
 	const LOCAL_STORAGE_KEY = 'unfinishedInquiryId';
@@ -283,34 +284,47 @@
 <div class="space-y-8">
 	<div class="relative min-h-[300px]">
 		{#if !$authStore.isAuthenticated && !$authStore.loading}
-			<div class="bg-white p-8 rounded-lg shadow-md">
-				<h1 class="text-2xl font-light text-center mb-6">Welcome to Inquiry</h1>
+			<div class="bg-white p-8 rounded-lg shadow-md relative overflow-hidden">
+				<!-- Background hero image with 50% opacity -->
+				<div class="absolute inset-0 z-0">
+					<img 
+						src="/hero.png" 
+						alt="" 
+						class="w-full h-full object-cover opacity-50"
+						aria-hidden="true"
+					/>
+				</div>
 				
-				<div class="prose prose-slate mx-auto">
-					<p class="text-center mb-6">
-						Inquiry is a tool for self-reflection based on Byron Katie's method of inquiry, a structured process for examining and questioning stressful thoughts.
-					</p>
+				<!-- Content with relative positioning to appear above the background -->
+				<div class="relative z-10">
+					<h1 class="text-2xl font-light text-center mb-6">Welcome to Inquiry</h1>
 					
-					<div class="bg-accent-blue/10 border border-accent-blue/20 rounded-md p-6 mb-8">
-						<h2 class="text-xl font-light text-accent-blue mb-3">How It Works</h2>
-						<ol class="text-accent-blue space-y-2 mb-4">
-							<li>Enter a belief that causes you stress or suffering</li>
-							<li>Answer four simple questions about that belief</li>
-							<li>Explore alternative perspectives through turnarounds</li>
-							<li>Receive a summary of your inquiry and optional AI guidance</li>
-						</ol>
-						<p class="text-accent-blue">This process can help you identify and question thoughts that cause suffering.</p>
-					</div>
-					
-					<div class="text-center">
-						<p class="mb-4">To begin your journey of self-inquiry, please create an account or log in.</p>
-						<div class="flex justify-center space-x-4">
-							<a href="/signup" class="px-6 py-3 bg-slate-700 text-white rounded-md hover:bg-slate-800 transition-colors duration-200 no-underline">
-								Create an Account
-							</a>
-							<a href="/login" class="px-6 py-3 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-50 transition-colors duration-200 no-underline">
-								Log In
-							</a>
+					<div class="prose prose-slate mx-auto">
+						<p class="text-center mb-6">
+							Inquiry is a tool for self-reflection based on Byron Katie's method of inquiry, a structured process for examining and questioning stressful thoughts.
+						</p>
+						
+						<div class="bg-accent-blue/10 border border-accent-blue/20 rounded-md p-6 mb-8 backdrop-blur-sm">
+							<h2 class="text-xl font-light text-accent-blue mb-3">How It Works</h2>
+							<ol class="text-accent-blue space-y-2 mb-4">
+								<li>Enter a belief that causes you stress or suffering</li>
+								<li>Answer four simple questions about that belief</li>
+								<li>Explore alternative perspectives through turnarounds</li>
+								<li>Receive a summary of your inquiry and optional AI guidance</li>
+							</ol>
+							<p class="text-accent-blue">This process can help you identify and question thoughts that cause suffering.</p>
+						</div>
+						
+						<div class="text-center">
+							<p class="mb-4">To begin your journey of self-inquiry, please create an account or log in.</p>
+							<div class="flex justify-center space-x-4">
+								<a href="/signup" class="px-6 py-3 bg-slate-700 text-white rounded-md hover:bg-slate-800 transition-colors duration-200 no-underline">
+									Create an Account
+								</a>
+								<a href="/login" class="px-6 py-3 border border-slate-300 bg-white text-slate-700 rounded-md hover:bg-slate-50 transition-colors duration-200 no-underline">
+									Log In
+								</a>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -333,6 +347,42 @@
 							class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
 							placeholder="Enter your belief here..."
 						></textarea>
+
+						<div class="text-center">
+							<button 
+								on:click={() => showInquiryGuidance = !showInquiryGuidance} 
+								class="text-sm text-slate-500 hover:text-accent-blue transition-colors duration-200 inline-flex items-center"
+							>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={showInquiryGuidance ? "M19 9l-7 7-7-7" : "M9 5l7 7-7 7"} />
+								</svg>
+								{showInquiryGuidance ? 'Hide guidance' : 'How does inquiry work?'}
+							</button>
+						</div>
+						
+						{#if showInquiryGuidance}
+							<div 
+								transition:slide={{ duration: 300 }}
+								class="mt-4 bg-slate-50 border border-slate-200 rounded-md p-4"
+							>
+								<div class="prose prose-slate prose-sm max-w-none">
+									<p class="text-center mb-4">
+										Inquiry is a tool for self-reflection based on Byron Katie's method of inquiry, a structured process for examining and questioning stressful thoughts.
+									</p>
+									
+									<div class="bg-accent-blue/10 border border-accent-blue/20 rounded-md p-4 mb-4">
+										<h3 class="text-base font-light text-accent-blue mb-2">How It Works</h3>
+										<ol class="text-accent-blue space-y-1 mb-3 pl-5">
+											<li>Enter a belief that causes you stress or suffering</li>
+											<li>Answer four simple questions about that belief</li>
+											<li>Explore alternative perspectives through turnarounds</li>
+											<li>Receive a summary of your inquiry and optional AI guidance</li>
+										</ol>
+										<p class="text-accent-blue text-sm">This process can help you identify and question thoughts that cause suffering.</p>
+									</div>
+								</div>
+							</div>
+						{/if}
 					</div>
 					<div class="flex justify-end mt-6">
 						<button 
