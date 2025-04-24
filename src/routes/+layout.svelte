@@ -1,7 +1,37 @@
 <script>
 	import '../app.css';
+	import { onMount, onDestroy } from 'svelte';
+	import { fade } from 'svelte/transition';
+	import { getRandomQuotation } from '$lib/utils/quotations';
 	
 	let { children } = $props();
+	let quotation = $state({ quote: '', source: '' });
+	let showQuote = $state(true);
+	let quotationInterval;
+	
+	function rotateQuotation() {
+		// Fade out current quote
+		showQuote = false;
+		
+		// Wait for fade out, then change quote and fade in
+		setTimeout(() => {
+			quotation = getRandomQuotation();
+			showQuote = true;
+		}, 400); // Match fade duration
+	}
+	
+	onMount(() => {
+		// Initial quotation
+		quotation = getRandomQuotation();
+		
+		// Set up interval to rotate quotes every 20 seconds
+		quotationInterval = setInterval(rotateQuotation, 20000);
+	});
+	
+	onDestroy(() => {
+		// Clean up interval when component is destroyed
+		if (quotationInterval) clearInterval(quotationInterval);
+	});
 </script>
 
 <div class="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
@@ -33,7 +63,16 @@
 	</main>
 	<footer class="py-4 px-4 md:px-8 text-slate-500 text-center text-sm">
 		<div class="container mx-auto max-w-3xl">
-			<p class="font-light">A tool for self-inquiry based on Byron Katie's method</p>
+			{#if quotation.quote && showQuote}
+				<div class="relative group" transition:fade={{ duration: 400 }}>
+					<p class="font-light italic mb-1">"{quotation.quote}"</p>
+					<p class="font-light opacity-0 group-hover:opacity-100 transition-opacity duration-300">— {quotation.source}</p>
+				</div>
+			{:else if !showQuote}
+				<div class="h-12"></div> <!-- Placeholder to maintain height during transition -->
+			{:else}
+				<p class="font-light">A tool for self-inquiry based on Byron Katie's method</p>
+			{/if}
 		</div>
 	</footer>
 </div>
