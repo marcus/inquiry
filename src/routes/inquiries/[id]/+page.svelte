@@ -308,8 +308,21 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			</ol>
 		</div>
 		
-		<div class="text-right text-sm text-slate-500 pt-4 border-t border-slate-100">
-			Created on {formatDate(inquiry.createdAt)}
+		<div class="text-right text-sm text-slate-500 pt-4 border-t border-slate-100 flex justify-between items-center">
+			<div>
+				Created on {formatDate(inquiry.createdAt)}
+			</div>
+			{#if !guidanceExists && !isStreaming}
+				<button 
+					on:click={getAIGuidance}
+					class="px-4 py-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors duration-200 text-sm shadow-sm flex items-center"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+					</svg>
+					Get Guidance
+				</button>
+			{/if}
 		</div>
 	</div>
 	
@@ -321,17 +334,7 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			</div>
 		{/if}
 		
-		{#if !guidanceExists && !isStreaming}
-			<button 
-				on:click={getAIGuidance}
-				class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 inline-flex items-center"
-			>
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-				</svg>
-				Get Guidance
-			</button>
-		{:else if isStreaming}
+		{#if isStreaming}
 			<div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 prose max-w-none">
 				<h2 class="text-xl font-medium mb-4">AI Guidance</h2>
 				{#if streamingResponse}
