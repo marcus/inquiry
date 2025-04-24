@@ -1,15 +1,17 @@
 <script>
 	import '../app.css';
 	import { onMount, onDestroy } from 'svelte';
-	import { fade } from 'svelte/transition';
+	import { fade, slide, fly } from 'svelte/transition';
 	import { getRandomQuotation } from '$lib/utils/quotations';
 	import { authStore, fetchCurrentUser, logout } from '$lib/stores/authStore';
 	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 	
 	let { children } = $props();
 	let quotation = $state({ quote: '', source: '' });
 	let showQuote = $state(true);
 	let quotationInterval;
+	let isMobileMenuOpen = $state(false);
 	
 	function rotateQuotation() {
 		// Fade out current quote
@@ -25,6 +27,21 @@
 	async function handleLogout() {
 		await logout();
 		goto('/');
+		if (isMobileMenuOpen) toggleMobileMenu();
+	}
+	
+	function toggleMobileMenu() {
+		isMobileMenuOpen = !isMobileMenuOpen;
+		
+		// Only manipulate document in the browser
+		if (browser) {
+			// Prevent scrolling when menu is open
+			if (isMobileMenuOpen) {
+				document.body.style.overflow = 'hidden';
+			} else {
+				document.body.style.overflow = '';
+			}
+		}
 	}
 	
 	onMount(() => {
@@ -41,16 +58,24 @@
 	onDestroy(() => {
 		// Clean up interval when component is destroyed
 		if (quotationInterval) clearInterval(quotationInterval);
+		
+		// Only manipulate document in the browser
+		if (browser && isMobileMenuOpen) {
+			// Ensure body scroll is restored if component is destroyed while menu is open
+			document.body.style.overflow = '';
+		}
 	});
 </script>
 
 <div class="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
-	<header class="py-6 px-4 md:px-8">
+	<header class="py-6 px-4 md:px-8 relative z-20">
 		<div class="container mx-auto max-w-3xl flex justify-between items-center">
 			<a href="/" class="hover:opacity-80 transition-opacity duration-200">
 				<img src="/logo.png" alt="Inquiry" class="h-8" />
 			</a>
-			<div class="flex space-x-3">
+			
+			<!-- Desktop Navigation (hidden on mobile) -->
+			<div class="hidden md:flex space-x-3">
 				{#if $authStore.loading}
 					<div class="px-4 py-2 text-sm text-slate-500">Loading...</div>
 				{:else if $authStore.isAuthenticated}
@@ -95,8 +120,76 @@
 					</a>
 				{/if}
 			</div>
+			
+			<!-- Mobile Hamburger Menu Button (hidden on desktop) -->
+			<button 
+				on:click={toggleMobileMenu}
+				class="md:hidden p-2 text-slate-700 hover:text-accent-blue transition-colors duration-200 z-30"
+				aria-label="Toggle menu"
+			>
+				{#if !isMobileMenuOpen}
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+					</svg>
+				{:else}
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+					</svg>
+				{/if}
+			</button>
 		</div>
 	</header>
+	
+	<!-- Full Screen Mobile Menu -->
+	{#if isMobileMenuOpen}
+		<div 
+			class="fixed inset-0 bg-slate-50 z-10 flex flex-col"
+			transition:fly={{ y: -20, duration: 300 }}
+		>
+			<div class="flex-1 flex flex-col items-center justify-center p-6 space-y-6">
+				{#if $authStore.loading}
+					<div class="text-center text-slate-500">Loading...</div>
+				{:else if $authStore.isAuthenticated}
+					<a 
+						href="/?new=true" 
+						on:click={toggleMobileMenu}
+						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200 border-b border-slate-200"
+					>
+						New Inquiry
+					</a>
+					<a 
+						href="/inquiries" 
+						on:click={toggleMobileMenu}
+						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200 border-b border-slate-200"
+					>
+						View All Inquiries
+					</a>
+					<a 
+						href="/user" 
+						on:click={toggleMobileMenu}
+						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200 border-b border-slate-200"
+					>
+						Profile
+					</a>
+					<button 
+						on:click={handleLogout}
+						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200"
+					>
+						Logout
+					</button>
+				{:else}
+					<a 
+						href="/login" 
+						on:click={toggleMobileMenu}
+						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200"
+					>
+						Login
+					</a>
+				{/if}
+			</div>
+		</div>
+	{/if}
+	
 	<main class="flex-1 px-4 md:px-8 py-6">
 		<div class="container mx-auto max-w-3xl">
 			{@render children()}
