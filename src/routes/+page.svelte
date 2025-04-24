@@ -5,6 +5,7 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import InquirySummary from '$lib/components/InquirySummary.svelte';
+	import { authStore } from '$lib/stores/authStore';
 
 	let currentStep = 0;
 	let visibleStep = 0;
@@ -281,6 +282,14 @@
 
 <div class="space-y-8">
 	<div class="relative min-h-[300px]">
+		{#if $authStore.isAuthenticated === false && !$authStore.loading && currentStep === 0 && !belief}
+			<div class="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-md">
+				<p class="text-blue-700 text-sm">
+					<span class="font-medium">Welcome to Inquiry!</span> Consider <a href="/signup" class="text-blue-600 underline hover:text-blue-800">creating an account</a> to save your inquiries and access them across devices.
+				</p>
+			</div>
+		{/if}
+		
 		{#if belief && visibleStep >= 1 && visibleStep <= 5 && !forceShowSummary}
 			<div class="w-full mb-8">
 				<div class="bg-white rounded-lg shadow-inner p-5 border border-slate-100">

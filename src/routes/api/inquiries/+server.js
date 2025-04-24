@@ -1,11 +1,21 @@
 import { db } from '$lib/server/db';
 import { inquiries } from '$lib/server/db/schema';
 import { json } from '@sveltejs/kit';
+import { eq } from 'drizzle-orm';
 
-export async function GET() {
+export async function GET({ locals }) {
   try {
-    const allInquiries = await db.select().from(inquiries).orderBy(inquiries.createdAt, 'desc');
-    return json(allInquiries);
+    // If user is authenticated, return only their inquiries
+    if (locals.user) {
+      const userInquiries = await db.select()
+        .from(inquiries)
+        .where(eq(inquiries.userId, locals.user.id))
+        .orderBy(inquiries.createdAt, 'desc');
+      return json(userInquiries);
+    } else {
+      // For unauthenticated users, return empty array
+      return json([]);
+    }
   } catch (error) {
     console.error('Failed to get inquiries:', error);
     return new Response(JSON.stringify({ error: 'Failed to get inquiries' }), {
@@ -15,10 +25,11 @@ export async function GET() {
   }
 }
 
-export async function POST({ request }) {
+export async function POST({ request, locals }) {
   try {
     const inquiry = await request.json();
     const result = await db.insert(inquiries).values({
+      userId: locals.user?.id || null, // Associate with user if authenticated
       belief: inquiry.belief || '',
       isTrue: inquiry.isTrue || null,
       absolutelyTrue: inquiry.absolutelyTrue || null,

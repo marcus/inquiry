@@ -1,10 +1,10 @@
 import { db } from '$lib/server/db';
 import { inquiries } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { json } from '@sveltejs/kit';
 
 // GET a single inquiry by ID
-export async function GET({ params }) {
+export async function GET({ params, locals }) {
   try {
     const id = parseInt(params.id);
     if (isNaN(id)) {
@@ -13,7 +13,20 @@ export async function GET({ params }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-    const result = await db.select().from(inquiries).where(eq(inquiries.id, id));
+    
+    // Build query
+    let query = eq(inquiries.id, id);
+    
+    // If user is authenticated, only allow access to their own inquiries
+    if (locals.user) {
+      query = and(query, eq(inquiries.userId, locals.user.id));
+    } else {
+      // For anonymous inquiries, only allow access if userId is null
+      query = and(query, eq(inquiries.userId, null));
+    }
+    
+    const result = await db.select().from(inquiries).where(query);
+    
     if (!result.length) {
       return new Response(JSON.stringify({ error: 'Inquiry not found' }), {
         status: 404,
@@ -30,7 +43,7 @@ export async function GET({ params }) {
   }
 }
 
-export async function DELETE({ params }) {
+export async function DELETE({ params, locals }) {
   try {
     const id = parseInt(params.id);
     
@@ -41,7 +54,17 @@ export async function DELETE({ params }) {
       });
     }
     
-    await db.delete(inquiries).where(eq(inquiries.id, id));
+    // Only allow users to delete their own inquiries
+    let query = eq(inquiries.id, id);
+    
+    if (locals.user) {
+      query = and(query, eq(inquiries.userId, locals.user.id));
+    } else {
+      // For anonymous inquiries, only allow deletion if userId is null
+      query = and(query, eq(inquiries.userId, null));
+    }
+    
+    await db.delete(inquiries).where(query);
     
     return json({ success: true });
   } catch (error) {
@@ -54,7 +77,7 @@ export async function DELETE({ params }) {
 }
 
 // PATCH: partial update to inquiry
-export async function PATCH({ params, request }) {
+export async function PATCH({ params, request, locals }) {
   try {
     const id = parseInt(params.id);
     if (isNaN(id)) {
@@ -63,8 +86,19 @@ export async function PATCH({ params, request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+    
+    // Only allow users to update their own inquiries
+    let query = eq(inquiries.id, id);
+    
+    if (locals.user) {
+      query = and(query, eq(inquiries.userId, locals.user.id));
+    } else {
+      // For anonymous inquiries, only allow updates if userId is null
+      query = and(query, eq(inquiries.userId, null));
+    }
+    
     const updates = await request.json();
-    await db.update(inquiries).set(updates).where(eq(inquiries.id, id));
+    await db.update(inquiries).set(updates).where(query);
     return json({ success: true });
   } catch (error) {
     console.error('Failed to update inquiry:', error);
