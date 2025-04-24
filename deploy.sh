@@ -89,8 +89,15 @@ if [ "$seed_db" = "y" ] || [ "$seed_db" = "Y" ]; then
     
     # Check if local database exists
     if [ -f "./db/inquiry.db" ]; then
+        # Stop the container before copying the database
+        echo "Stopping the container to safely copy the database..."
+        ssh $SERVER_USER@$SERVER_IP "cd $SERVER_DIR && docker-compose stop web"
+        
         # Ensure db directory exists on server
         ssh $SERVER_USER@$SERVER_IP "mkdir -p $SERVER_DIR/db"
+        
+        # Backup existing database if it exists
+        ssh $SERVER_USER@$SERVER_IP "if [ -f $SERVER_DIR/db/inquiry.db ]; then cp $SERVER_DIR/db/inquiry.db $SERVER_DIR/db/inquiry.db.backup; echo 'Existing database backed up.'; fi"
         
         # Copy local database to server
         echo "Copying local database to server..."
@@ -99,6 +106,12 @@ if [ "$seed_db" = "y" ] || [ "$seed_db" = "Y" ]; then
         # Set proper permissions
         echo "Setting proper permissions on the server..."
         ssh $SERVER_USER@$SERVER_IP "chmod 666 $SERVER_DIR/db/inquiry.db"
+        
+        # Restart the container
+        echo "Restarting the container..."
+        ssh $SERVER_USER@$SERVER_IP "cd $SERVER_DIR && docker-compose start web"
+        
+        echo "Database seeded successfully!"
     else
         echo "Error: Local database file not found at ./db/inquiry.db"
     fi
