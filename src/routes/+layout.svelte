@@ -68,21 +68,21 @@
 						View All Inquiries
 					</a>
 					
-					<div class="flex space-x-2">
-						<a href="/user" class="px-4 py-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors duration-200 text-sm shadow-sm flex items-center">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<div class="flex space-x-4">
+						<a href="/user" class="relative group p-2 text-slate-600 hover:text-blue-600 transition-colors duration-200 flex items-center">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
 							</svg>
-							{$authStore.user?.username}
+							<span class="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Profile</span>
 						</a>
 						<button 
 							on:click={handleLogout}
-							class="px-4 py-2 rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors duration-200 text-sm shadow-sm flex items-center"
+							class="relative group p-2 text-slate-600 hover:text-blue-600 transition-colors duration-200 flex items-center"
 						>
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
 							</svg>
-							Logout
+							<span class="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Logout</span>
 						</button>
 					</div>
 				{:else}
