@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   web:
     image: ${DOCKER_REGISTRY:-ghcr.io}/${DOCKER_USERNAME:-marcus}/${DOCKER_IMAGE:-inquiry}:${DOCKER_TAG:-web-latest}
@@ -10,6 +12,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - DATABASE_URL=/app/db/inquiry.db
       - ORIGIN=http://haplab.com
+      - JWT_SECRET=${JWT_SECRET:-inquiry_jwt_secret_key_2025}
     volumes:
       - ./db:/app/db
     restart: unless-stopped
@@ -18,12 +21,17 @@ services:
         limits:
           cpus: '1'
           memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-
-volumes:
-  db_data:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

@@ -78,6 +78,71 @@ npm run build
 npm run preview
 ```
 
+## Deployment
+
+The application includes a Docker-based deployment system for easy hosting.
+
+### Prerequisites for Deployment
+
+- Docker and Docker Compose
+- SSH access to your server
+- A domain name pointing to your server
+
+### Deployment Configuration
+
+1. Create a `deploy.config` file in the root directory (copy from `deploy.config.example` if available):
+
+```bash
+# Server configuration
+SERVER_IP=your_server_ip
+SERVER_USER=your_ssh_username
+SERVER_DIR=/path/on/server/for/app
+DOMAIN_NAME=your-domain.com
+
+# Docker configuration (optional)
+DOCKER_REGISTRY=ghcr.io
+DOCKER_USERNAME=your_username
+DOCKER_IMAGE=inquiry
+DOCKER_TAG=web-latest
+```
+
+2. Make sure your `.env` file contains production-ready values.
+
+### Deployment Commands
+
+The application can be deployed using the included `deploy.sh` script:
+
+```bash
+# Standard deployment
+./deploy.sh
+
+# Clean build deployment (rebuilds from scratch)
+./deploy.sh --no-cache
+
+# Deploy with database seeding (copies your local database to the server)
+./deploy.sh --seed-db
+
+# Clean build with database seeding
+./deploy.sh --no-cache --seed-db
+```
+
+### Deployment Process
+
+The deployment script:
+
+1. Builds a Docker image of the application
+2. Pushes the image to the specified Docker registry
+3. Copies configuration files to your server
+4. Updates the running containers on your server
+5. Verifies the deployment with health checks
+6. Optionally seeds the database from your local development environment
+
+### Server Requirements
+
+- Docker and Docker Compose installed
+- Proper firewall settings to allow HTTP/HTTPS traffic
+- A reverse proxy (like Nginx or Traefik) for SSL termination (recommended)
+
 ## App Flow
 
 1. **Enter Belief**: Write down the belief you want to examine
