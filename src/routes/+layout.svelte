@@ -11,7 +11,7 @@
 				<img src="/logo.png" alt="Inquiry" class="h-8" />
 			</a>
 			<div class="flex space-x-3">
-				<a href="/?new=true" class="px-4 py-2 rounded-md bg-slate-700 text-white hover:bg-slate-800 transition-colors duration-200 text-sm shadow-sm">New Inquiry</a>
+				<a href="/?new=true" class="px-4 py-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors duration-200 text-sm shadow-sm">New Inquiry</a>
 				<a href="/inquiries" class="px-4 py-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors duration-200 text-sm shadow-sm">View all inquiries</a>
 			</div>
 		</div>

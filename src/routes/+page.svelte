@@ -269,7 +269,7 @@
 						class="w-full p-4 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
 						placeholder="Enter your belief here..."
 					></textarea>
-					<div class="flex justify-end">
+					<div class="flex justify-end mt-6">
 						<button 
 							on:click={handleNextBelief} 
 							disabled={!belief.trim() || isTransitioning} 
@@ -280,7 +280,7 @@
 					</div>
 				{:else if visibleStep === 1}
 					{#if belief}
-						<p class="text-lg text-center p-4 italic">{belief}</p>
+						<p class="text-lg text-center p-4 italic font-medium border-b border-slate-200 pb-4 text-blue-700">{belief}</p>
 					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Is it true?</h2>
@@ -290,7 +290,7 @@
 							placeholder="Your answer..."
 						></textarea>
 					</div>
-					<div class="flex justify-between">
+					<div class="flex justify-between mt-12">
 						<button 
 							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
@@ -308,7 +308,7 @@
 					</div>
 				{:else if visibleStep === 2}
 					{#if belief}
-						<p class="text-lg text-center p-4 italic">{belief}</p>
+						<p class="text-lg text-center p-4 italic font-medium border-b border-slate-200 pb-4 text-blue-700">{belief}</p>
 					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Can I absolutely know it's true?</h2>
@@ -318,7 +318,7 @@
 							placeholder="Your answer..."
 						></textarea>
 					</div>
-					<div class="flex justify-between">
+					<div class="flex justify-between mt-6">
 						<button 
 							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
@@ -336,7 +336,7 @@
 					</div>
 				{:else if visibleStep === 3}
 					{#if belief}
-						<p class="text-lg text-center p-4 italic">{belief}</p>
+						<p class="text-lg text-center p-4 italic font-medium border-b border-slate-200 pb-4 text-blue-700">{belief}</p>
 					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">How do I react when I believe that thought?</h2>
@@ -346,7 +346,7 @@
 							placeholder="Your answer..."
 						></textarea>
 					</div>
-					<div class="flex justify-between">
+					<div class="flex justify-between mt-6">
 						<button 
 							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
@@ -364,7 +364,7 @@
 					</div>
 				{:else if visibleStep === 4}
 					{#if belief}
-						<p class="text-lg text-center p-4 italic">{belief}</p>
+						<p class="text-lg text-center p-4 italic font-medium border-b border-slate-200 pb-4 text-blue-700">{belief}</p>
 					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Who would I be without the thought?</h2>
@@ -374,7 +374,7 @@
 							placeholder="Your answer..."
 						></textarea>
 					</div>
-					<div class="flex justify-between">
+					<div class="flex justify-between mt-6">
 						<button 
 							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
@@ -392,7 +392,7 @@
 					</div>
 				{:else if visibleStep === 5}
 					{#if belief}
-						<p class="text-lg text-center p-4 italic">{belief}</p>
+						<p class="text-lg text-center p-4 italic font-medium border-b border-slate-200 pb-4 text-blue-700">{belief}</p>
 					{/if}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-6 text-center">Write three turnarounds for your belief</h2>
@@ -426,7 +426,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="flex justify-between">
+					<div class="flex justify-between mt-6">
 						<button 
 							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
