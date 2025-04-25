@@ -533,14 +533,8 @@
 							placeholder="Your answer..."
 						></textarea>
 					</div>
-					<div class="flex justify-between mt-6">
-						<button 
-							onclick={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
-							disabled={isTransitioning}
-							class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-						>
-							Back
-						</button>
+					
+					<div class="flex justify-end mt-6">
 						<button 
 							onclick={handleNextIsTrue}
 							disabled={!isTrue.trim() || isTransitioning} 
