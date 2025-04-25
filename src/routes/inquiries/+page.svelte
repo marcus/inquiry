@@ -6,12 +6,23 @@
 	let isLoading = true;
 	let error = null;
 	let showDeleteConfirm = null;
+	
+	// Pagination state
+	let currentPage = 1;
+	let totalPages = 1;
+	let totalCount = 0;
+	let limit = 20; 
 
-	onMount(async () => {
+	async function fetchInquiries(page = 1) {
+		isLoading = true;
 		try {
-			const response = await fetch('/api/inquiries');
+			const response = await fetch(`/api/inquiries?page=${page}&limit=${limit}`);
 			if (response.ok) {
-				inquiries = await response.json();
+				const data = await response.json();
+				inquiries = data.inquiries;
+				currentPage = data.pagination.page;
+				totalPages = data.pagination.totalPages;
+				totalCount = data.pagination.totalCount;
 			} else {
 				error = 'Failed to load inquiries';
 			}
@@ -21,6 +32,10 @@
 		} finally {
 			isLoading = false;
 		}
+	}
+
+	onMount(() => {
+		fetchInquiries(1);
 	});
 
 	async function deleteInquiry(id) {
@@ -30,7 +45,10 @@
 			});
 
 			if (response.ok) {
-				inquiries = inquiries.filter(inquiry => inquiry.id !== id);
+				// After deletion, refresh the current page
+				// If this was the last item on the page, go to previous page (unless we're on page 1)
+				const isLastItemOnPage = inquiries.length === 1 && currentPage > 1;
+				fetchInquiries(isLastItemOnPage ? currentPage - 1 : currentPage);
 				showDeleteConfirm = null;
 			} else {
 				error = 'Failed to delete inquiry';
@@ -58,6 +76,12 @@
 	function resumeInquiry(id) {
 		localStorage.setItem('unfinishedInquiryId', id);
 		window.location.href = '/';
+	}
+	
+	function goToPage(page) {
+		if (page >= 1 && page <= totalPages) {
+			fetchInquiries(page);
+		}
 	}
 </script>
 
@@ -173,5 +197,36 @@
 				</div>
 			{/each}
 		</div>
+		
+		<!-- Pagination Controls -->
+		{#if totalPages > 1}
+			<div class="flex justify-center items-center space-x-4 mt-8">
+				<button 
+					on:click={() => goToPage(currentPage - 1)} 
+					class="p-2 rounded-full {currentPage === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:bg-slate-100'}"
+					disabled={currentPage === 1}
+					aria-label="Previous page"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+					</svg>
+				</button>
+				
+				<div class="text-sm text-slate-500">
+					Page {currentPage} of {totalPages}
+				</div>
+				
+				<button 
+					on:click={() => goToPage(currentPage + 1)} 
+					class="p-2 rounded-full {currentPage === totalPages ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:bg-slate-100'}"
+					disabled={currentPage === totalPages}
+					aria-label="Next page"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+					</svg>
+				</button>
+			</div>
+		{/if}
 	{/if}
 </div>

@@ -1,20 +1,56 @@
 import { db } from '$lib/server/db';
 import { inquiries } from '$lib/server/db/schema';
 import { json } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
-export async function GET({ locals }) {
+export async function GET({ locals, url }) {
   try {
+    // Get pagination parameters from URL
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '5');
+    const offset = (page - 1) * limit;
+
     // If user is authenticated, return only their inquiries
     if (locals.user) {
+      // Get total count for pagination
+      const totalCountResult = await db.select({ 
+        count: sql`count(*)` 
+      })
+      .from(inquiries)
+      .where(eq(inquiries.userId, locals.user.id));
+      
+      // Extract count value safely
+      const totalCount = Number(totalCountResult[0]?.count || 0);
+      const totalPages = Math.ceil(totalCount / limit);
+
+      // Get paginated inquiries
       const userInquiries = await db.select()
         .from(inquiries)
         .where(eq(inquiries.userId, locals.user.id))
-        .orderBy(inquiries.createdAt, 'desc');
-      return json(userInquiries);
+        .orderBy(inquiries.createdAt, 'desc')
+        .limit(limit)
+        .offset(offset);
+
+      return json({
+        inquiries: userInquiries,
+        pagination: {
+          page,
+          limit,
+          totalCount,
+          totalPages
+        }
+      });
     } else {
       // For unauthenticated users, return empty array
-      return json([]);
+      return json({
+        inquiries: [],
+        pagination: {
+          page: 1,
+          limit,
+          totalCount: 0,
+          totalPages: 0
+        }
+      });
     }
   } catch (error) {
     console.error('Failed to get inquiries:', error);
