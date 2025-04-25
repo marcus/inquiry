@@ -26,8 +26,18 @@
 	let isSuggestingTurnarounds = $state(false);
 	let streamingTurnarounds = $state('');
 	let turnaroundError = $state(null);
+	
+	// Track which turnarounds were AI-suggested vs user-modified
+	let turnaround1IsAiSuggested = $state(false);
+	let turnaround2IsAiSuggested = $state(false);
+	let turnaround3IsAiSuggested = $state(false);
+	
+	// Track if user has modified the turnarounds after AI suggestion
+	let turnaround1UserModified = $state(false);
+	let turnaround2UserModified = $state(false);
+	let turnaround3UserModified = $state(false);
 
-	let inquiryId = null;
+	let inquiryId = $state(null);
 	const LOCAL_STORAGE_KEY = 'unfinishedInquiryId';
 
 	// Watch for URL changes to detect "new inquiry" requests
@@ -140,7 +150,7 @@
 					turnaround1, turnaround2, turnaround3
 				});
 			} catch (error) {
-				console.error('Error saving inquiry before reset:', error);
+				console.error('Error saving in-progress inquiry:', error);
 			}
 		}
 		
@@ -342,15 +352,56 @@
 	// Extract turnarounds from streaming response and update fields
 	function updateTurnaroundFields() {
 		const lines = streamingTurnarounds.split('\n');
+		let suggestedTurnaround1 = '';
+		let suggestedTurnaround2 = '';
+		let suggestedTurnaround3 = '';
 		
 		for (const line of lines) {
 			if (line.startsWith('Turnaround 1:')) {
-				turnaround1 = line.replace('Turnaround 1:', '').trim();
+				suggestedTurnaround1 = line.replace('Turnaround 1:', '').trim();
 			} else if (line.startsWith('Turnaround 2:')) {
-				turnaround2 = line.replace('Turnaround 2:', '').trim();
+				suggestedTurnaround2 = line.replace('Turnaround 2:', '').trim();
 			} else if (line.startsWith('Turnaround 3:')) {
-				turnaround3 = line.replace('Turnaround 3:', '').trim();
+				suggestedTurnaround3 = line.replace('Turnaround 3:', '').trim();
 			}
+		}
+		
+		// Only update empty fields or AI-suggested fields that haven't been modified by the user
+		if (suggestedTurnaround1 && (turnaround1 === '' || (turnaround1IsAiSuggested && !turnaround1UserModified))) {
+			turnaround1 = suggestedTurnaround1;
+			turnaround1IsAiSuggested = true;
+			turnaround1UserModified = false;
+		}
+		
+		if (suggestedTurnaround2 && (turnaround2 === '' || (turnaround2IsAiSuggested && !turnaround2UserModified))) {
+			turnaround2 = suggestedTurnaround2;
+			turnaround2IsAiSuggested = true;
+			turnaround2UserModified = false;
+		}
+		
+		if (suggestedTurnaround3 && (turnaround3 === '' || (turnaround3IsAiSuggested && !turnaround3UserModified))) {
+			turnaround3 = suggestedTurnaround3;
+			turnaround3IsAiSuggested = true;
+			turnaround3UserModified = false;
+		}
+	}
+	
+	// Handle user modifications to turnarounds
+	function handleTurnaround1Change() {
+		if (turnaround1IsAiSuggested) {
+			turnaround1UserModified = true;
+		}
+	}
+	
+	function handleTurnaround2Change() {
+		if (turnaround2IsAiSuggested) {
+			turnaround2UserModified = true;
+		}
+	}
+	
+	function handleTurnaround3Change() {
+		if (turnaround3IsAiSuggested) {
+			turnaround3UserModified = true;
 		}
 	}
 </script>
@@ -576,7 +627,8 @@
 								<textarea 
 									id="turnaround1"
 									bind:value={turnaround1} 
-									class="w-full p-3 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
+									oninput={handleTurnaround1Change}
+									class="w-full p-3 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none {turnaround1IsAiSuggested && !turnaround1UserModified ? 'bg-blue-50' : ''}" 
 									placeholder="First turnaround..."
 								></textarea>
 							</div>
@@ -585,7 +637,8 @@
 								<textarea 
 									id="turnaround2"
 									bind:value={turnaround2} 
-									class="w-full p-3 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
+									oninput={handleTurnaround2Change}
+									class="w-full p-3 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none {turnaround2IsAiSuggested && !turnaround2UserModified ? 'bg-blue-50' : ''}" 
 									placeholder="Second turnaround..."
 								></textarea>
 							</div>
@@ -594,7 +647,8 @@
 								<textarea 
 									id="turnaround3"
 									bind:value={turnaround3} 
-									class="w-full p-3 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
+									oninput={handleTurnaround3Change}
+									class="w-full p-3 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none {turnaround3IsAiSuggested && !turnaround3UserModified ? 'bg-blue-50' : ''}" 
 									placeholder="Third turnaround..."
 								></textarea>
 							</div>
