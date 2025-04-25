@@ -213,19 +213,20 @@
 		</div>
 	{/if}
 	
-	<main class="flex-1 px-4 md:px-8 py-6 pb-32">
-		<div class="container mx-auto max-w-3xl">
+	<main class="flex-1">
+		<div class="container mx-auto max-w-3xl px-4 md:px-8">
 			{@render children()}
 		</div>
 	</main>
-	<footer class="py-4 px-4 md:px-8 text-slate-500 text-center text-sm mt-auto relative">
+	<footer class="py-4 px-4 md:px-8 text-slate-500 text-center text-sm bg-slate-50">
 		<div class="container mx-auto max-w-3xl">
 			<!-- Hide quotations on mobile when guidance is shown -->
 			{#if !$showGuidanceStore}
-				<div class="h-24 flex flex-col justify-center"> 
+				<div class="flex flex-col justify-center"> 
 					{#if visible}
 						<div 
 							transition:fly={{ y: -30, duration: 2000, easing: quintOut }}
+							class="mb-4"
 						>
 							<p class="font-light italic mb-1">{quotation.quote}</p>
 							<p class="font-light opacity-0 hover:opacity-100 transition-opacity duration-2000">— {quotation.source}</p>

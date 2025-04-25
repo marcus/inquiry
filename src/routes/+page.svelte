@@ -469,7 +469,7 @@
 		{/if}
 		
 		{#if showQuestion && !forceShowSummary && $authStore.isAuthenticated}
-			<div transition:fade={{ duration: 400 }} onoutroend={handleFadeOutEnd} onintroend={handleFadeInEnd} class="absolute w-full">
+			<div transition:fade={{ duration: 400 }} onoutroend={handleFadeOutEnd} onintroend={handleFadeInEnd} class="w-full">
 				{#if visibleStep === 0}
 					<h2 class="text-xl font-light mb-6 text-center">What belief would you like to examine?</h2>
 					<div class="space-y-4">
@@ -625,7 +625,7 @@
 						</button>
 					</div>
 				{:else if visibleStep === 5}
-					<div class="space-y-4">
+					<div class="space-y-4 mb-8">
 						<h2 class="text-xl font-light mb-6 text-center">Write three turnarounds for your belief</h2>
 						<div class="space-y-4 md:space-y-0 md:grid md:grid-cols-3 md:gap-4">
 							<div>
