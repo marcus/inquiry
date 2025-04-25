@@ -12,6 +12,8 @@
 	let streamingResponse = $state('');
 	let isStreaming = $state(false);
 	let error = $state(null);
+	let guidanceLimitReached = $state(false);
+	let maxGuidanceGenerations = $state(2);
 	
 	// Reactive declaration using proper runes mode syntax
 	const renderedHtml = $derived(marked.parse(streamingResponse));
@@ -89,6 +91,7 @@ Created on ${formatDate(inquiry.createdAt)}`;
 		error = null;
 		isStreaming = true;
 		streamingResponse = '';
+		guidanceLimitReached = false;
 		
 		try {
 			const response = await fetch('/api/ai-guidance', {
@@ -99,6 +102,15 @@ Created on ${formatDate(inquiry.createdAt)}`;
 			
 			if (!response.ok) {
 				const errorData = await response.json();
+				
+				// Handle guidance limit reached error
+				if (errorData.limitReached) {
+					guidanceLimitReached = true;
+					maxGuidanceGenerations = errorData.maxGenerations || 2;
+					isStreaming = false;
+					throw new Error('Guidance limit reached');
+				}
+				
 				throw new Error(errorData.error || 'Failed to get AI guidance');
 			}
 			
@@ -233,15 +245,33 @@ Created on ${formatDate(inquiry.createdAt)}`;
 				Created on {formatDate(inquiry.createdAt)}
 			</div>
 			{#if showGetGuidance && !guidanceExists && !isStreaming}
-				<button 
-					onclick={getAIGuidance}
-					class="px-4 py-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors duration-200 text-sm shadow-sm flex items-center"
-				>
-					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-					</svg>
-					Get Guidance
-				</button>
+				{#if guidanceLimitReached}
+					<div class="relative">
+						<button 
+							disabled={true}
+							class="px-4 py-2 rounded-md bg-white border border-slate-200 text-slate-400 cursor-not-allowed transition-colors duration-200 text-sm shadow-sm flex items-center opacity-70"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+							</svg>
+							Get Guidance
+						</button>
+						<div class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-1 rounded whitespace-nowrap">
+							Guidance limit reached ({maxGuidanceGenerations})
+							<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-slate-800"></div>
+						</div>
+					</div>
+				{:else}
+					<button 
+						onclick={getAIGuidance}
+						class="px-4 py-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors duration-200 text-sm shadow-sm flex items-center"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+						</svg>
+						Get Guidance
+					</button>
+				{/if}
 			{/if}
 		</div>
 	</div>

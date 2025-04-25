@@ -2,12 +2,15 @@ import { json } from '@sveltejs/kit';
 import { TokenJS } from 'token.js';
 import { db } from '$lib/server/db';
 import { inquiries, aiResponses } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { env } from '$env/dynamic/private';
 import { aiConfig } from '$lib/config';
 
+// Maximum number of guidance generations allowed per inquiry
+const MAX_GUIDANCE_GENERATIONS = 2;
+
 // POST endpoint to generate AI guidance
-export async function POST({ request }) {
+export async function POST({ request, locals }) {
   try {
     console.log('AI guidance POST request received');
     const { inquiryId } = await request.json();
@@ -18,6 +21,36 @@ export async function POST({ request }) {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+
+    // Get the current user from locals
+    const currentUser = locals.user;
+    const userId = currentUser?.id || null;
+    
+    // Check if the user has reached the guidance limit for this inquiry
+    // Skip the check for user_id=1 (admin user)
+    if (userId !== 1) {
+      const existingResponses = await db
+        .select({ 
+          count: sql`COUNT(*)`,
+          maxGuidanceCount: sql`MAX(guidance_count)`
+        })
+        .from(aiResponses)
+        .where(eq(aiResponses.inquiryId, inquiryId));
+      
+      const { count, maxGuidanceCount } = existingResponses[0];
+      
+      if (maxGuidanceCount >= MAX_GUIDANCE_GENERATIONS) {
+        console.log(`User ${userId} has reached the guidance limit for inquiry ${inquiryId}`);
+        return new Response(JSON.stringify({ 
+          error: 'Guidance limit reached',
+          limitReached: true,
+          maxGenerations: MAX_GUIDANCE_GENERATIONS
+        }), {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
     }
 
     console.log('Processing guidance request for inquiry ID:', inquiryId);
@@ -115,10 +148,28 @@ ${inquiryText}`;
         }
         
         console.log('Stream complete, saving response to database');
-        // Save the completed response to the database
+        // Save the complete response to the database
+        let guidanceCount = 1;
+        
+        // Check if there are existing responses for this inquiry
+        const existingResponses = await db
+          .select({ 
+            count: sql`COUNT(*)`,
+            maxGuidanceCount: sql`MAX(guidance_count)`
+          })
+          .from(aiResponses)
+          .where(eq(aiResponses.inquiryId, inquiryId));
+        
+        if (existingResponses[0].count > 0) {
+          // Increment the guidance count
+          guidanceCount = (existingResponses[0].maxGuidanceCount || 0) + 1;
+        }
+        
+        // Insert the new response with the updated guidance count
         await db.insert(aiResponses).values({
-          inquiryId: inquiryId,
-          content: completedResponse
+          inquiryId,
+          content: completedResponse,
+          guidanceCount
         });
         
         console.log('Response saved, closing stream');

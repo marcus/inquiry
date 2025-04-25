@@ -1,5 +1,11 @@
 import { verifyToken, getUserById } from '$lib/server/auth';
 import { parse } from 'cookie';
+import { runMigrations } from '$lib/server/db/migrations/index.js';
+
+// Run migrations on server startup
+runMigrations().catch(error => {
+  console.error('Failed to run migrations:', error);
+});
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {

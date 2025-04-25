@@ -34,6 +34,9 @@ Inquiry is a single-page application designed to guide users through Byron Katie
   - `db/` - Database related code
     - `index.js` - Database connection setup
     - `schema.js` - Database schema definition with Drizzle ORM
+    - `migrations/` - Database migration files
+      - `index.js` - Migration runner
+      - `add_guidance_count.js` - Migration to add guidance count column
 
 #### Routes (`src/routes/`)
 
@@ -78,9 +81,11 @@ Inquiry is a single-page application designed to guide users through Byron Katie
 
 ## Database Schema
 
-The database has a single `inquiries` table with the following structure:
+The database has the following tables:
 
+### Inquiries Table
 - `id` - Primary key (auto-increment)
+- `userId` - Foreign key to the users table
 - `belief` - The belief being examined
 - `isTrue` - Answer to "Is it true?"
 - `absolutelyTrue` - Answer to "Can I absolutely know it's true?"
@@ -90,6 +95,44 @@ The database has a single `inquiries` table with the following structure:
 - `turnaround2` - Second turnaround
 - `turnaround3` - Third turnaround
 - `createdAt` - Timestamp when the inquiry was created
+
+### Users Table
+- `id` - Primary key (auto-increment)
+- `username` - Unique username
+- `email` - Unique email address
+- `passwordHash` - Hashed password
+- `createdAt` - Timestamp when the user was created
+
+### AI Responses Table
+- `id` - Primary key (auto-increment)
+- `inquiryId` - Foreign key to the inquiries table
+- `content` - The AI-generated guidance content
+- `guidanceCount` - Number of times guidance has been generated for this inquiry
+- `createdAt` - Timestamp when the response was created
+
+## Database Migrations
+
+The application uses a simple migration system to manage database schema changes:
+
+1. **Migration Files**: Located in `src/lib/server/db/migrations/`, each file handles a specific schema change.
+   
+2. **Migration Runner**: The `index.js` file in the migrations directory runs all migrations in sequence.
+
+3. **Automatic Execution**: Migrations run automatically on server startup via the `hooks.server.js` file.
+
+4. **Current Migrations**:
+   - `add_guidance_count.js`: Adds a column to track how many times AI guidance has been generated for each inquiry.
+
+5. **Usage Limits**:
+   - Regular users are limited to 2 AI guidance generations per inquiry.
+   - Admin user (user_id=1) has unlimited generations.
+
+### TODO: Migration System Improvements
+- Implement version tracking for migrations
+- Add a CLI command to run migrations manually
+- Create a rollback mechanism for failed migrations
+- Add migration status logging to a separate table
+- Implement a more robust migration ordering system
 
 ## UI/UX Design
 

@@ -26,5 +26,6 @@ export const aiResponses = sqliteTable('ai_responses', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   inquiryId: integer('inquiry_id').notNull(),
   content: text('content').notNull(),
+  guidanceCount: integer('guidance_count').notNull().default(1),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
 });
