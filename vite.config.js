@@ -5,6 +5,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
+	optimizeDeps: {
+		exclude: ['better-sqlite3']
+	},
 	test: {
 		workspace: [
 			{

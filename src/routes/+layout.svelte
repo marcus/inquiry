@@ -10,7 +10,10 @@
 	import { browser } from '$app/environment';
 	import { uiConfig } from '$lib/config';
 	
+	// Get children content to render
 	let { children } = $props();
+	
+	// State
 	let quotation = $state(getRandomQuotation());
 	let visible = $state(true);
 	let quotationInterval;
@@ -249,16 +252,19 @@
 			{#if !$showGuidanceStore}
 				<div class="flex flex-col justify-center"> 
 					{#if visible}
-						<div 
-							transition:fly={{ y: -30, duration: 2000, easing: quintOut }}
-							class="mb-4"
-						>
-							<p class="font-light italic mb-1">{quotation.quote}</p>
-							<p class="font-light opacity-0 hover:opacity-100 transition-opacity duration-2000">— {quotation.source}</p>
+						<div transition:fade={{ duration: 500 }} class="text-center italic mb-2">
+							"{quotation.quote}"
+						</div>
+						<div transition:fade={{ duration: 500 }} class="text-center text-xs">
+							— {quotation.source}
 						</div>
 					{/if}
 				</div>
 			{/if}
+			
+			<div class="mt-4 text-xs text-slate-400">
+				Inquiry &copy; {new Date().getFullYear()} | <a href="/about" class="text-slate-400 hover:text-slate-500 transition-colors">About</a>
+			</div>
 		</div>
 	</footer>
 </div>

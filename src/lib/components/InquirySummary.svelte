@@ -3,8 +3,8 @@
 	import { marked } from 'marked';
 	import { processNextBeliefs, getNextBeliefUrl } from '$lib/utils/beliefProcessor';
 	
-	// Props
-	let { inquiry, showGetGuidance = true, showRefreshButton = true } = $props();
+	// Define props with runes in Svelte 5
+	const { inquiry, showGetGuidance = true, showRefreshButton = true } = $props();
 	
 	// Reactive state for AI guidance
 	let aiGuidance = $state(null);
@@ -60,6 +60,8 @@
 	}
 
 	function copyToClipboard() {
+		if (!inquiry) return;
+		
 		const summary = `# Inquiry
 
 ## Belief
@@ -88,6 +90,8 @@ Created on ${formatDate(inquiry.createdAt)}`;
 	}
 	
 	async function getAIGuidance() {
+		if (!inquiry?.id) return;
+		
 		error = null;
 		isStreaming = true;
 		streamingResponse = '';
@@ -142,6 +146,8 @@ Created on ${formatDate(inquiry.createdAt)}`;
 	}
 	
 	async function refreshGuidance() {
+		if (!inquiry?.id) return;
+		
 		try {
 			// Delete existing guidance first
 			await fetch(`/api/ai-guidance?inquiryId=${inquiry.id}`, {

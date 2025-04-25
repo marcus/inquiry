@@ -54,11 +54,6 @@ export class Migrator {
       
       console.log('Migrations table created successfully.');
     }
-    
-    // Log the migration files found to help with debugging
-    const migrationFiles = await this.getAllMigrationFiles();
-    console.log(`Found ${migrationFiles.length} migration files:`, 
-      migrationFiles.map(m => `${m.version}:${m.name}`).join(', '));
   }
 
   // Get a list of all available migration files
@@ -76,7 +71,6 @@ export class Migrator {
                !['index.js', 'migrator.js'].includes(file);
       });
 
-    console.log(`Found migration files: ${migrationFiles.join(', ')}`);
     
     return migrationFiles.map(file => {
       const [versionStr, ...nameParts] = file.replace('.js', '').split('_');
@@ -132,7 +126,7 @@ export class Migrator {
     
     try {
       // Import the migration module
-      const migrationModule = await import(migration.path);
+      const migrationModule = await import(/* @vite-ignore */ migration.path);
       
       // Begin transaction
       this.sqlite.prepare('BEGIN TRANSACTION').run();
@@ -203,7 +197,7 @@ export class Migrator {
 
     try {
       // Import the migration module
-      const migrationModule = await import(migrationFile.path);
+      const migrationModule = await import(/* @vite-ignore */ migrationFile.path);
       
       // Begin transaction
       this.sqlite.prepare('BEGIN TRANSACTION').run();
@@ -263,7 +257,6 @@ export class Migrator {
       return { applied: 0, failed: 0 };
     }
     
-    console.log(`Found ${pendingMigrations.length} pending migrations to apply`);
     if (rolledBackMigrations.length > 0) {
       console.log(`Found ${rolledBackMigrations.length} rolled back migrations to reapply`);
     }
@@ -287,7 +280,7 @@ export class Migrator {
     for (const migration of rolledBackMigrations) {
       try {
         // Import the migration module
-        const migrationModule = await import(migration.path);
+        const migrationModule = await import(/* @vite-ignore */ migration.path);
         
         // Begin transaction
         this.sqlite.prepare('BEGIN TRANSACTION').run();

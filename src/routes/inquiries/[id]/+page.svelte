@@ -5,9 +5,12 @@
 	import InquirySummary from '$lib/components/InquirySummary.svelte';
 	import { processNextBeliefs } from '$lib/utils/beliefProcessor';
 	
-	let { data } = $props();
-	const { inquiry, aiGuidance: initialGuidance } = data;
-	let aiGuidance = $state(initialGuidance?.content || null);
+	// Access props in Svelte 5
+	const { data } = $props();
+	
+	// Initialize reactive state
+	let inquiry = $state(data.inquiry);
+	let aiGuidance = $state(data.aiGuidance?.content || null);
 	let isLoadingGuidance = $state(false);
 	let streamingResponse = $state('');
 	let isStreaming = $state(false);
@@ -21,12 +24,14 @@
 	
 	onMount(async () => {
 		// If we already have guidance from the server, no need to check again
-		if (!guidanceExists) {
+		if (!guidanceExists && inquiry?.id) {
 			await checkForExistingGuidance();
 		}
 	});
 	
 	async function checkForExistingGuidance() {
+		if (!inquiry?.id) return;
+		
 		try {
 			const response = await fetch(`/api/ai-guidance?inquiryId=${inquiry.id}`);
 			
@@ -57,6 +62,8 @@
 	}
 
 	function copyToClipboard() {
+		if (!inquiry) return;
+		
 		const summary = `# Inquiry
 
 ## Belief
@@ -85,6 +92,8 @@ Created on ${formatDate(inquiry.createdAt)}`;
 	}
 	
 	async function getAIGuidance() {
+		if (!inquiry?.id) return;
+		
 		error = null;
 		isStreaming = true;
 		streamingResponse = '';
@@ -128,6 +137,8 @@ Created on ${formatDate(inquiry.createdAt)}`;
 	}
 	
 	async function refreshGuidance() {
+		if (!inquiry?.id) return;
+		
 		try {
 			// Delete existing guidance first
 			await fetch(`/api/ai-guidance?inquiryId=${inquiry.id}`, {
@@ -179,9 +190,11 @@ Created on ${formatDate(inquiry.createdAt)}`;
 </script>
 
 <div class="space-y-8">
-	<InquirySummary 
-		inquiry={inquiry} 
-		showGetGuidance={true} 
-		showRefreshButton={true} 
-	/>
+	{#if inquiry}
+		<InquirySummary 
+			inquiry={inquiry} 
+			showGetGuidance={true} 
+			showRefreshButton={true} 
+		/>
+	{/if}
 </div>
