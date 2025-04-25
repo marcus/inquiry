@@ -5,7 +5,7 @@
 // AI model configuration
 export const aiConfig = {
   provider: 'openai',
-  model: 'gpt-4o-mini',
+  model: 'gpt-4o',
 };
 
 // AI model for turnaround suggestions

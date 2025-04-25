@@ -38,7 +38,7 @@ ${reaction || 'Not provided'}
 ${withoutThought || 'Not provided'}`;
 
     // Create the prompt focused specifically on turnarounds
-    const prompt = `Act as a facilitator for Byron Katie's "The Work" method of inquiry. Based on the following inquiry, please suggest ONLY three possible turnarounds for the belief. Do not provide any additional commentary, explanation, or introduction. Just provide the three turnarounds in this exact format:
+    const prompt = `Act as a facilitator for Byron Katie's "The Work" method of inquiry. eversing a stressful thought to explore its opposites. This might include turning it toward the self, toward the other, or to the direct opposite. Each turnaround is a way to test the validity of the original belief and uncover alternative perspectives that may feel as true—or truer.Based on the following inquiry, please suggest ONLY three possible turnarounds for the belief. Do not provide any additional commentary, explanation, or introduction. Just provide the three turnarounds in this exact format:
 
 Turnaround 1: [first turnaround]
 Turnaround 2: [second turnaround]
