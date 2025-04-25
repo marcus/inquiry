@@ -9,7 +9,20 @@
  */
 export function getNextBeliefUrl(beliefText) {
   // Create a URL that will pre-populate a new inquiry with this belief
-  return `/?belief=${encodeURIComponent(beliefText.trim())}`;
+  // First decode any HTML entities to ensure proper encoding
+  const decodedText = decodeHTMLEntities(beliefText.trim());
+  return `/?belief=${encodeURIComponent(decodedText)}`;
+}
+
+/**
+ * Helper function to decode HTML entities in a string
+ * @param {string} text - Text that may contain HTML entities
+ * @returns {string} Text with HTML entities decoded
+ */
+function decodeHTMLEntities(text) {
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = text;
+  return textarea.value;
 }
 
 /**

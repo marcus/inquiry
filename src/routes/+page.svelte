@@ -53,12 +53,22 @@
 		if (browser && $page.url.searchParams.get('belief') && !inquiryId) {
 			const urlBelief = $page.url.searchParams.get('belief');
 			if (urlBelief.trim()) {
-				belief = decodeURIComponent(urlBelief);
+				// Decode the URL parameter and any HTML entities it might contain
+				const decodedBelief = decodeHTMLEntities(decodeURIComponent(urlBelief));
+				belief = decodedBelief;
 				// Clear the URL parameter after setting the belief
 				goto('/', { replaceState: true });
 			}
 		}
 	});
+
+	// Helper function to decode HTML entities
+	function decodeHTMLEntities(text) {
+		if (!browser) return text;
+		const textarea = document.createElement('textarea');
+		textarea.innerHTML = text;
+		return textarea.value;
+	}
 
 	// Handle the new inquiry request from URL parameter
 	async function handleNewInquiryRequest() {
@@ -113,16 +123,6 @@
 				console.error('Error loading saved inquiry:', e);
 				localStorage.removeItem(LOCAL_STORAGE_KEY);
 				resetInquiry();
-			}
-		}
-		
-		// Check if there's a belief in the URL query params
-		if (browser && $page.url.searchParams.get('belief') && !inquiryId) {
-			const urlBelief = $page.url.searchParams.get('belief');
-			if (urlBelief.trim()) {
-				belief = decodeURIComponent(urlBelief);
-				// Clear the URL parameter after setting the belief
-				goto('/', { replaceState: true });
 			}
 		}
 	});
