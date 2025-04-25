@@ -432,7 +432,7 @@
 					
 					<div class="prose prose-slate mx-auto">
 						<p class="text-center mb-6">
-							Inquiry is a tool for self-reflection based on Byron Katie's method of inquiry, a structured process for examining and questioning stressful thoughts.
+							Inquiry is a tool for self-reflection based on Byron Katie's method of inquiry, a structured process for examining and questioning stressful thoughts. <a href="/about" class="text-accent-blue hover:underline">Learn more about The Work</a>.
 						</p>
 						
 						<div class="bg-accent-blue/10 border border-accent-blue/20 rounded-md p-6 mb-8 backdrop-blur-sm">
