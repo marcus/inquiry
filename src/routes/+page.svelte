@@ -7,40 +7,47 @@
 	import InquirySummary from '$lib/components/InquirySummary.svelte';
 	import { authStore } from '$lib/stores/authStore';
 
-	let currentStep = 0;
-	let visibleStep = 0;
-	let belief = '';
-	let isTrue = '';
-	let absolutelyTrue = '';
-	let reaction = '';
-	let withoutThought = '';
-	let turnaround1 = '';
-	let turnaround2 = '';
-	let turnaround3 = '';
-	let isSaving = false;
-	let saveSuccess = false;
-	let isTransitioning = false;
-	let showQuestion = true;
-	let forceShowSummary = false;
-	let showInquiryGuidance = false;
+	let currentStep = $state(0);
+	let visibleStep = $state(0);
+	let belief = $state('');
+	let isTrue = $state('');
+	let absolutelyTrue = $state('');
+	let reaction = $state('');
+	let withoutThought = $state('');
+	let turnaround1 = $state('');
+	let turnaround2 = $state('');
+	let turnaround3 = $state('');
+	let isSaving = $state(false);
+	let saveSuccess = $state(false);
+	let isTransitioning = $state(false);
+	let showQuestion = $state(true);
+	let forceShowSummary = $state(false);
+	let showInquiryGuidance = $state(false);
+	let isSuggestingTurnarounds = $state(false);
+	let streamingTurnarounds = $state('');
+	let turnaroundError = $state(null);
 
 	let inquiryId = null;
 	const LOCAL_STORAGE_KEY = 'unfinishedInquiryId';
 
 	// Watch for URL changes to detect "new inquiry" requests
-	$: if (browser && $page.url.searchParams.get('new') === 'true') {
-		handleNewInquiryRequest();
-	}
+	$effect(() => {
+		if (browser && $page.url.searchParams.get('new') === 'true') {
+			handleNewInquiryRequest();
+		}
+	});
 	
 	// Watch for belief parameter in URL
-	$: if (browser && $page.url.searchParams.get('belief') && !inquiryId) {
-		const urlBelief = $page.url.searchParams.get('belief');
-		if (urlBelief.trim()) {
-			belief = decodeURIComponent(urlBelief);
-			// Clear the URL parameter after setting the belief
-			goto('/', { replaceState: true });
+	$effect(() => {
+		if (browser && $page.url.searchParams.get('belief') && !inquiryId) {
+			const urlBelief = $page.url.searchParams.get('belief');
+			if (urlBelief.trim()) {
+				belief = decodeURIComponent(urlBelief);
+				// Clear the URL parameter after setting the belief
+				goto('/', { replaceState: true });
+			}
 		}
-	}
+	});
 
 	// Handle the new inquiry request from URL parameter
 	async function handleNewInquiryRequest() {
@@ -279,6 +286,73 @@
 		const summary = `# Inquiry\n\n## Belief\n${belief}\n\n## Is it true?\n${isTrue}\n\n## Can I absolutely know it's true?\n${absolutelyTrue}\n\n## How do I react when I believe that thought?\n${reaction}\n\n## Who would I be without the thought?\n${withoutThought}\n\n## Turnarounds\n1. ${turnaround1}\n2. ${turnaround2}\n3. ${turnaround3}\n\nCreated on ${new Date().toLocaleDateString()}`;
 		navigator.clipboard.writeText(summary);
 	}
+
+	// Function to get AI suggestions for turnarounds
+	async function suggestTurnarounds() {
+		if (isSuggestingTurnarounds) return;
+		
+		isSuggestingTurnarounds = true;
+		streamingTurnarounds = '';
+		turnaroundError = null;
+		
+		try {
+			const response = await fetch('/api/turnaround-suggestions', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ 
+					belief,
+					isTrue,
+					absolutelyTrue,
+					reaction,
+					withoutThought
+				})
+			});
+			
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Failed to get turnaround suggestions');
+			}
+			
+			const reader = response.body.getReader();
+			const decoder = new TextDecoder();
+			
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) {
+					break;
+				}
+				
+				const text = decoder.decode(value);
+				streamingTurnarounds = streamingTurnarounds + text;
+				
+				// Try to extract and fill in turnarounds as they come in
+				updateTurnaroundFields();
+			}
+			
+			// Final update of turnaround fields
+			updateTurnaroundFields();
+			isSuggestingTurnarounds = false;
+		} catch (err) {
+			turnaroundError = err.message || 'Failed to get turnaround suggestions';
+			isSuggestingTurnarounds = false;
+			console.error('Error getting turnaround suggestions:', err);
+		}
+	}
+	
+	// Extract turnarounds from streaming response and update fields
+	function updateTurnaroundFields() {
+		const lines = streamingTurnarounds.split('\n');
+		
+		for (const line of lines) {
+			if (line.startsWith('Turnaround 1:')) {
+				turnaround1 = line.replace('Turnaround 1:', '').trim();
+			} else if (line.startsWith('Turnaround 2:')) {
+				turnaround2 = line.replace('Turnaround 2:', '').trim();
+			} else if (line.startsWith('Turnaround 3:')) {
+				turnaround3 = line.replace('Turnaround 3:', '').trim();
+			}
+		}
+	}
 </script>
 
 <div class="space-y-8">
@@ -338,7 +412,7 @@
 		{/if}
 		
 		{#if showQuestion && !forceShowSummary && $authStore.isAuthenticated}
-			<div transition:fade={{ duration: 400 }} on:outroend={handleFadeOutEnd} on:introend={handleFadeInEnd} class="absolute w-full">
+			<div transition:fade={{ duration: 400 }} onoutroend={handleFadeOutEnd} onintroend={handleFadeInEnd} class="absolute w-full">
 				{#if visibleStep === 0}
 					<h2 class="text-xl font-light mb-6 text-center">What belief would you like to examine?</h2>
 					<div class="space-y-4">
@@ -350,7 +424,7 @@
 
 						<div class="text-center">
 							<button 
-								on:click={() => showInquiryGuidance = !showInquiryGuidance} 
+								onclick={() => showInquiryGuidance = !showInquiryGuidance} 
 								class="text-sm text-slate-500 hover:text-accent-blue transition-colors duration-200 inline-flex items-center"
 							>
 								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -386,7 +460,7 @@
 					</div>
 					<div class="flex justify-end mt-6">
 						<button 
-							on:click={handleNextBelief}
+							onclick={handleNextBelief}
 							disabled={!belief.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -404,14 +478,14 @@
 					</div>
 					<div class="flex justify-between mt-6">
 						<button 
-							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
+							onclick={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
 							class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							Back
 						</button>
 						<button 
-							on:click={handleNextIsTrue}
+							onclick={handleNextIsTrue}
 							disabled={!isTrue.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -429,14 +503,14 @@
 					</div>
 					<div class="flex justify-between mt-6">
 						<button 
-							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
+							onclick={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
 							class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							Back
 						</button>
 						<button 
-							on:click={handleNextAbsolutelyTrue}
+							onclick={handleNextAbsolutelyTrue}
 							disabled={!absolutelyTrue.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -454,14 +528,14 @@
 					</div>
 					<div class="flex justify-between mt-6">
 						<button 
-							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
+							onclick={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
 							class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							Back
 						</button>
 						<button 
-							on:click={handleNextReaction}
+							onclick={handleNextReaction}
 							disabled={!reaction.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -479,14 +553,14 @@
 					</div>
 					<div class="flex justify-between mt-6">
 						<button 
-							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
+							onclick={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
 							class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							Back
 						</button>
 						<button 
-							on:click={handleNextWithoutThought}
+							onclick={handleNextWithoutThought}
 							disabled={!withoutThought.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -525,17 +599,44 @@
 								></textarea>
 							</div>
 						</div>
+						
+						{#if turnaroundError}
+							<div class="p-4 bg-red-100 text-red-700 rounded-md mt-4">
+								<p>{turnaroundError}</p>
+							</div>
+						{/if}
+						
+						<div class="text-center mt-4">
+							<button 
+								onclick={suggestTurnarounds}
+								class="text-sm text-slate-500 hover:text-accent-blue transition-colors duration-200 flex items-center mx-auto"
+								disabled={isSuggestingTurnarounds}
+							>
+								{#if isSuggestingTurnarounds}
+									<svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+										<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+										<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+									</svg>
+									Generating suggestions...
+								{:else}
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+									</svg>
+									Suggest turnarounds
+								{/if}
+							</button>
+						</div>
 					</div>
 					<div class="flex justify-between mt-6">
 						<button 
-							on:click={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
+							onclick={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
 							disabled={isTransitioning}
 							class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							Back
 						</button>
 						<button 
-							on:click={handleNextTurnarounds}
+							onclick={handleNextTurnarounds}
 							disabled={!turnaround1.trim() || !turnaround2.trim() || !turnaround3.trim() || isTransitioning} 
 							class="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
 						>
@@ -570,7 +671,7 @@
 				
 				<div class="flex justify-start mt-6">
 					<button 
-						on:click={() => { forceShowSummary = false; currentStep = 5; visibleStep = 5; }}
+						onclick={() => { forceShowSummary = false; currentStep = 5; visibleStep = 5; }}
 						disabled={isTransitioning}
 						class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
