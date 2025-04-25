@@ -214,7 +214,7 @@
 	{/if}
 	
 	<main class="flex-1">
-		<div class="container mx-auto max-w-3xl px-4 md:px-8">
+		<div class="container mx-auto max-w-3xl px-4 md:px-8 border border-slate-200 rounded-lg shadow-sm bg-white my-4 py-6">
 			{@render children()}
 		</div>
 	</main>

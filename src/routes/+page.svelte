@@ -463,7 +463,7 @@
 		{:else if belief && visibleStep >= 1 && visibleStep <= 5 && !forceShowSummary}
 			<div class="w-full mb-8">
 				<div class="bg-white rounded-lg shadow-inner p-5 border border-slate-100">
-					<p class="text-lg text-center italic font-medium text-slate-700">{belief}</p>
+					<p class="text-lg text-center font-medium italic text-slate-700"><span class="text-slate-400 font-normal not-italic">Belief:&n	bsp;</span>{belief}</p>
 				</div>
 			</div>
 		{/if}
