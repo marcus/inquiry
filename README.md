@@ -191,3 +191,92 @@ This feature helps deepen your inquiry practice by providing thoughtful reflecti
 ## License
 
 MIT
+
+# Database Migration System
+
+The Inquiry project includes a robust database migration system for managing schema changes:
+
+## Features
+
+- Version-based migrations with automatic ordering
+- Migration status tracking with detailed error logging
+- Transaction-based migrations with rollback support
+- Graceful error handling and recovery from failed migrations
+- CLI for running migrations manually
+
+## Using Migrations
+
+### CLI Commands
+
+```bash
+# Show migration status
+npm run migrate:status
+
+# Apply all pending migrations (including previously rolled back migrations)
+npm run migrate:up
+
+# Rollback to a specific version (e.g., version 2)
+npm run migrate:rollback 2
+
+# Create a new migration file
+npm run migrate:create my_migration_name
+```
+
+### Migration Files
+
+Migration files are located in `src/lib/server/db/migrations/` with the naming format: 
+`<version>_<name>.js`
+
+Each migration must export `up` and `down` functions:
+
+```javascript
+/**
+ * Migration: example
+ * Version: 1
+ */
+
+// Apply the migration
+export async function up(db, sqlite) {
+  console.log('Running migration: example');
+  
+  // Implement migration logic here
+  sqlite.prepare('CREATE TABLE example (id INTEGER PRIMARY KEY)').run();
+}
+
+// Roll back the migration
+export async function down(db, sqlite) {
+  console.log('Rolling back migration: example');
+  
+  // Implement rollback logic here
+  sqlite.prepare('DROP TABLE example').run();
+}
+```
+
+### Database Options
+
+You can specify a different database path for migrations:
+
+```bash
+npm run migrate:status -- --db ./path/to/database.db
+```
+
+### Automatic Migrations
+
+Migrations automatically run on server startup via `hooks.server.js`.
+
+### Test Suite
+
+Tests for the migration system are located in `src/lib/server/db/migrations/tests/` and cover:
+
+- Basic migration operations
+- Version ordering
+- Rollback functionality
+- Transaction handling
+- Error recovery
+- System-level integration
+
+Run the tests with:
+
+```bash
+npm test -- src/lib/server/db/migrations/tests
+```

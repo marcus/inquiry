@@ -13,7 +13,11 @@
 		"db:push": "drizzle-kit push",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
-		"db:auth-migrate": "node --loader ts-node/esm src/lib/server/db/migrate.js"
+		"migrate": "node --experimental-specifier-resolution=node src/commands/db-migrate.js",
+		"migrate:create": "node --experimental-specifier-resolution=node src/commands/db-migrate.js create",
+		"migrate:status": "node --experimental-specifier-resolution=node src/commands/db-migrate.js status",
+		"migrate:up": "node --experimental-specifier-resolution=node src/commands/db-migrate.js up",
+		"migrate:rollback": "node --experimental-specifier-resolution=node src/commands/db-migrate.js rollback"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^4.0.0",

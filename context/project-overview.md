@@ -112,27 +112,36 @@ The database has the following tables:
 
 ## Database Migrations
 
-The application uses a simple migration system to manage database schema changes:
+The application uses a robust migration system to manage database schema changes:
 
-1. **Migration Files**: Located in `src/lib/server/db/migrations/`, each file handles a specific schema change.
+1. **Migration Files**: Located in `src/lib/server/db/migrations/`, each file handles a specific schema change with an ordered version number.
    
-2. **Migration Runner**: The `index.js` file in the migrations directory runs all migrations in sequence.
+2. **Migration Runner**: The `migrator.js` class in the migrations directory provides the core functionality for applying and rolling back migrations.
 
 3. **Automatic Execution**: Migrations run automatically on server startup via the `hooks.server.js` file.
 
-4. **Current Migrations**:
-   - `add_guidance_count.js`: Adds a column to track how many times AI guidance has been generated for each inquiry.
+4. **Migration Features**:
+   - Version tracking with automatic ordering
+   - Transaction-based migrations with proper rollback
+   - Detailed status tracking and error handling
+   - Support for recovering from interrupted migrations
+   - CLI commands for managing migrations
 
-5. **Usage Limits**:
-   - Regular users are limited to 2 AI guidance generations per inquiry.
-   - Admin user (user_id=1) has unlimited generations.
+5. **Test Suite**: Comprehensive tests in `src/lib/server/db/migrations/tests/` ensure the migration system works reliably, covering:
+   - Basic migration operations
+   - Version ordering
+   - Rollback functionality
+   - Transaction handling
+   - Error recovery
+   - System-level integration
 
-### TODO: Migration System Improvements
-- Implement version tracking for migrations
-- Add a CLI command to run migrations manually
-- Create a rollback mechanism for failed migrations
-- Add migration status logging to a separate table
-- Implement a more robust migration ordering system
+6. **CLI Commands**:
+   ```bash
+   npm run migrate:status    # Show migration status
+   npm run migrate:up        # Apply pending migrations
+   npm run migrate:rollback  # Rollback to a specific version
+   npm run migrate:create    # Create a new migration file
+   ```
 
 ## UI/UX Design
 

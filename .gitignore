@@ -20,6 +20,10 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+test.db
+test-migration.db
+db/test.db
+db/test-migration.db
 
 # Deployment configuration
 deploy.config

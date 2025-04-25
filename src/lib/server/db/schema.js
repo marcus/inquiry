@@ -29,3 +29,15 @@ export const aiResponses = sqliteTable('ai_responses', {
   guidanceCount: integer('guidance_count').notNull().default(1),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
 });
+
+// Migration tracking table
+export const migrations = sqliteTable('migrations', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull().unique(),
+  version: integer('version').notNull(),
+  appliedAt: integer('applied_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  status: text('status').notNull(), // 'success', 'failed', 'rolled-back'
+  errorMessage: text('error_message'),
+  rollbackStatus: text('rollback_status'),
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true)
+});
