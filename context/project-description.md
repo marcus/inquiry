@@ -1,6 +1,6 @@
 # Inquiry
 
-This is a single-page application (SPA) called "Inquiry" designed to guide users through the five core questions of Byron Katie’s method of inquiry, followed by a “turnaround” exercise. The experience should be seamless, quiet, and meditative—focused on introspection, not UI elements.
+This is a single-page application (SPA) called "Inquiry" designed to guide users through the five core questions of Byron Katie's method of inquiry, followed by a "turnaround" exercise. The experience should be seamless, quiet, and meditative—focused on introspection, not UI elements.
 
 ## App Flow:
 	1. Enter Belief (Always Visible):
@@ -43,6 +43,7 @@ This is a single-page application (SPA) called "Inquiry" designed to guide users
 	  - Tailwind CSS (for utility-first styling with a calm color palette)
 	  - DaisyUI or custom Tailwind theme for meditative styling
 	•	Markdown copy: clipboard.js or a simple utility function using the Web API
+	•	Testing: Vitest for unit and component testing
 
 ### Backend
 	•	Storage: SQLite
