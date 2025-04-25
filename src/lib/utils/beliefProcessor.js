@@ -20,9 +20,17 @@ export function getNextBeliefUrl(beliefText) {
  * @returns {string} Text with HTML entities decoded
  */
 function decodeHTMLEntities(text) {
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = text;
-  return textarea.value;
+  // Server-safe implementation that doesn't rely on document
+  if (typeof text !== 'string') return '';
+  
+  // Replace common HTML entities
+  return text
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ');
 }
 
 /**
