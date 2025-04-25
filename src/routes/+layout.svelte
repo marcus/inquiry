@@ -5,6 +5,7 @@
 	import { quintOut } from 'svelte/easing';
 	import { getRandomQuotation } from '$lib/utils/quotations';
 	import { authStore, fetchCurrentUser, logout } from '$lib/stores/authStore';
+	import { showGuidanceStore } from '$lib/stores/uiStore';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { uiConfig } from '$lib/config';
@@ -14,6 +15,7 @@
 	let visible = $state(true);
 	let quotationInterval;
 	let isMobileMenuOpen = $state(false);
+	let isMobile = $state(false);
 	
 	function rotateQuotation() {
 		// Hide current quotation
@@ -46,6 +48,12 @@
 		}
 	}
 	
+	function checkMobileSize() {
+		if (browser) {
+			isMobile = window.innerWidth < 768;
+		}
+	}
+	
 	onMount(() => {
 		// Initial quotation
 		quotation = getRandomQuotation();
@@ -55,6 +63,14 @@
 		
 		// Fetch current user
 		fetchCurrentUser();
+		
+		// Check initial screen size
+		checkMobileSize();
+		
+		// Add resize listener
+		if (browser) {
+			window.addEventListener('resize', checkMobileSize);
+		}
 	});
 	
 	onDestroy(() => {
@@ -65,6 +81,11 @@
 		if (browser && isMobileMenuOpen) {
 			// Ensure body scroll is restored if component is destroyed while menu is open
 			document.body.style.overflow = '';
+		}
+		
+		// Remove resize listener
+		if (browser) {
+			window.removeEventListener('resize', checkMobileSize);
 		}
 	});
 </script>
@@ -192,24 +213,26 @@
 		</div>
 	{/if}
 	
-	<main class="flex-1 px-4 md:px-8 py-6">
+	<main class="flex-1 px-4 md:px-8 py-6 pb-32">
 		<div class="container mx-auto max-w-3xl">
 			{@render children()}
 		</div>
 	</main>
-	<footer class="py-4 px-4 md:px-8 text-slate-500 text-center text-sm">
+	<footer class="py-4 px-4 md:px-8 text-slate-500 text-center text-sm mt-auto relative">
 		<div class="container mx-auto max-w-3xl">
-			<div class="h-24 relative overflow-hidden"> <!-- Increased height for longer quotes -->
-				{#if visible}
-					<div 
-						class="absolute inset-0 flex flex-col justify-center"
-						transition:fly={{ y: -30, duration: 2000, easing: quintOut }}
-					>
-						<p class="font-light italic mb-1">{quotation.quote}</p>
-						<p class="font-light opacity-0 hover:opacity-100 transition-opacity duration-2000">— {quotation.source}</p>
-					</div>
-				{/if}
-			</div>
+			<!-- Hide quotations on mobile when guidance is shown -->
+			{#if !$showGuidanceStore}
+				<div class="h-24 flex flex-col justify-center"> 
+					{#if visible}
+						<div 
+							transition:fly={{ y: -30, duration: 2000, easing: quintOut }}
+						>
+							<p class="font-light italic mb-1">{quotation.quote}</p>
+							<p class="font-light opacity-0 hover:opacity-100 transition-opacity duration-2000">— {quotation.source}</p>
+						</div>
+					{/if}
+				</div>
+			{/if}
 		</div>
 	</footer>
 </div>

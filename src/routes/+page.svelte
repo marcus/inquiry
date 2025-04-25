@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import InquirySummary from '$lib/components/InquirySummary.svelte';
 	import { authStore } from '$lib/stores/authStore';
+	import { showGuidanceStore } from '$lib/stores/uiStore';
 
 	let currentStep = $state(0);
 	let visibleStep = $state(0);
@@ -404,6 +405,11 @@
 			turnaround3UserModified = true;
 		}
 	}
+
+	function toggleGuidance() {
+		showInquiryGuidance = !showInquiryGuidance;
+		$showGuidanceStore = showInquiryGuidance;
+	}
 </script>
 
 <div class="space-y-8">
@@ -475,7 +481,7 @@
 
 						<div class="text-center">
 							<button 
-								onclick={() => showInquiryGuidance = !showInquiryGuidance} 
+								onclick={toggleGuidance} 
 								class="text-sm text-slate-500 hover:text-accent-blue transition-colors duration-200 inline-flex items-center"
 							>
 								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -488,7 +494,7 @@
 						{#if showInquiryGuidance}
 							<div 
 								transition:slide={{ duration: 300 }}
-								class="mt-4 bg-slate-50 border border-slate-200 rounded-md p-4"
+								class="mt-4 mb-16 bg-slate-50 border border-slate-200 rounded-md p-4"
 							>
 								<div class="prose prose-slate prose-sm max-w-none">
 									<p class="text-center mb-4">
