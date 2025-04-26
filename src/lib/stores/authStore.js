@@ -55,6 +55,14 @@ export async function login(username, password) {
       await fetchCurrentUser();
       return { success: true };
     } else {
+      // Special handling for Google users attempting to log in with password
+      if (data.isGoogleUser) {
+        return { 
+          success: false, 
+          error: data.error,
+          isGoogleUser: true
+        };
+      }
       return { success: false, error: data.error };
     }
   } catch (error) {

@@ -10,6 +10,7 @@
   let error = '';
   let isSubmitting = false;
   let errorFromUrl = '';
+  let isGoogleUser = false;
   
   onMount(() => {
     // Check URL for error parameters from Google auth
@@ -42,10 +43,11 @@
   
   async function handleSubmit() {
     error = '';
+    isGoogleUser = false;
     
     // Validate input
     if (!username || !password) {
-      error = 'Username and password are required';
+      error = 'Username/email and password are required';
       return;
     }
     
@@ -59,6 +61,10 @@
         goto('/');
       } else {
         error = result.error || 'Invalid username or password';
+        // Check if this is a Google user
+        if (result.isGoogleUser) {
+          isGoogleUser = true;
+        }
       }
     } catch (e) {
       console.error('Login error:', e);
@@ -74,19 +80,31 @@
   
   <form on:submit|preventDefault={handleSubmit} class="space-y-4">
     {#if error}
-      <div class="p-3 bg-red-50 text-red-700 rounded-md text-sm">
+      <div class={`p-3 rounded-md text-sm ${isGoogleUser ? 'bg-blue-50 text-blue-700' : 'bg-red-50 text-red-700'}`}>
         {error}
+        {#if isGoogleUser}
+          <div class="mt-2">
+            <button
+              type="button"
+              on:click={handleGoogleLogin}
+              class="inline-flex items-center px-3 py-1.5 bg-white border border-blue-300 rounded-md text-blue-700 text-sm hover:bg-blue-50"
+            >
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/google.svg" alt="Google" class="w-4 h-4 mr-1.5" />
+              Sign in with Google
+            </button>
+          </div>
+        {/if}
       </div>
     {/if}
     
     <div>
-      <label for="username" class="block text-sm text-slate-600 mb-1">Username</label>
+      <label for="username" class="block text-sm text-slate-600 mb-1">Username or Email</label>
       <input
         id="username"
         type="text"
         bind:value={username}
         class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-400 focus:border-transparent"
-        placeholder="Enter your username"
+        placeholder="Enter your username or email"
       />
     </div>
     
