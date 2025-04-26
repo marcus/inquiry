@@ -12,35 +12,8 @@
   let error = '';
   let isSubmitting = false;
   
-  onMount(() => {
-    // Load Google Identity Services
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    document.head.append(script);
-    
-    script.onload = () => {
-      // Make sure data.googleClientId exists
-      if (data && data.googleClientId) {
-        google.accounts.id.initialize({
-          client_id: data.googleClientId,
-          callback: handleCredentialResponse
-        });
-        
-        // Render the button
-        google.accounts.id.renderButton(
-          document.getElementById('googleButton'),
-          { theme: 'outline', size: 'large', text: 'signup_with', shape: 'rectangular' }
-        );
-      }
-    };
-  });
-  
-  // Handle Google Sign-In callback
-  function handleCredentialResponse(response) {
-    if (response && response.credential) {
-      googleLogin();
-    }
+  function handleGoogleLogin() {
+    googleLogin();
   }
   
   async function handleSubmit() {
@@ -157,7 +130,14 @@
       </div>
     </div>
     
-    <div id="googleButton" class="flex justify-center"></div>
+    <button 
+      type="button" 
+      on:click={handleGoogleLogin}
+      class="flex items-center justify-center w-full py-2 px-4 border border-slate-300 rounded-md hover:bg-slate-50 transition-colors duration-200"
+    >
+      <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/google.svg" alt="Google" class="w-5 h-5 mr-2" />
+      Sign up with Google
+    </button>
     
     <div class="text-center text-sm text-slate-500 mt-4">
       Already have an account? <a href="/login" class="text-accent-blue hover:text-accent-blue/80 no-underline">Log in</a>
