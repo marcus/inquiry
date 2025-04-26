@@ -1,5 +1,4 @@
 import { redirect } from '@sveltejs/kit';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
 import { createToken } from '$lib/server/auth';
@@ -8,6 +7,10 @@ import { serialize } from 'cookie';
 
 // Google OAuth callback handler
 export async function GET({ url, cookies }) {
+  // Get client credentials from environment variables
+  const clientId = process.env.PUBLIC_GOOGLE_CLIENT_ID || '';
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+  
   const code = url.searchParams.get('code');
   if (!code) {
     throw redirect(302, '/login?error=google_auth_failed');
@@ -20,8 +23,8 @@ export async function GET({ url, cookies }) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         code,
-        client_id: GOOGLE_CLIENT_ID,
-        client_secret: GOOGLE_CLIENT_SECRET,
+        client_id: clientId,
+        client_secret: clientSecret,
         redirect_uri: 'http://localhost:5173/api/auth/google',
         grant_type: 'authorization_code'
       })

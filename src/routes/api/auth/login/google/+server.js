@@ -1,10 +1,12 @@
-import { GOOGLE_CLIENT_ID } from '$env/static/private';
 import { redirect } from '@sveltejs/kit';
 
 export async function GET() {
+  // Get client ID from environment variable
+  const clientId = process.env.PUBLIC_GOOGLE_CLIENT_ID || '';
+  
   const redirectUri = 'http://localhost:5173/api/auth/google'; // must match Google Console entry
   const params = new URLSearchParams({
-    client_id: GOOGLE_CLIENT_ID,
+    client_id: clientId,
     redirect_uri: redirectUri,
     response_type: 'code',
     scope: 'openid email profile',
@@ -13,4 +15,4 @@ export async function GET() {
   });
 
   throw redirect(302, `https://accounts.google.com/o/oauth2/v2/auth?${params}`);
-} 
+}

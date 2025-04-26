@@ -30,7 +30,7 @@ ENV DATABASE_URL=/app/db/build-placeholder.db NODE_ENV=production
 # Build the application
 RUN npm run build
 
-# Production stage - use a smaller base image
+# Production stage
 FROM node:20-alpine AS production
 
 # Set working directory

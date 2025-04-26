@@ -128,3 +128,6 @@ deploy-clean:
 # Deploy and seed the database
 deploy-seed:
     ./deploy.sh --seed-db 
+
+build:
+    npm run build

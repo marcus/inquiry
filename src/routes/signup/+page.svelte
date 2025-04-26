@@ -1,10 +1,12 @@
 <script>
   import { goto } from '$app/navigation';
+  import { PUBLIC_GOOGLE_CLIENT_ID } from '$env/static/public';
   import { signup, googleLogin } from '$lib/stores/authStore';
   import { onMount } from 'svelte';
   
-  export let data;
-  
+  // Change from 'export let data' to 'export const data' since we're not using it directly
+  // This addresses the 'unused export property' warning
+  export const data = {};
   let username = '';
   let email = '';
   let password = '';
