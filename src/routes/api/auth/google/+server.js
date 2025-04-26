@@ -4,13 +4,13 @@ import { users } from '$lib/server/db/schema';
 import { createToken } from '$lib/server/auth';
 import { eq } from 'drizzle-orm';
 import { serialize } from 'cookie';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, getBaseUrl } from '$lib/server/env';
 
 // Google OAuth callback handler
 export async function GET({ url, cookies }) {
-  // Get client credentials from environment variables
-  const clientId = GOOGLE_CLIENT_ID || '';
-  const clientSecret = GOOGLE_CLIENT_SECRET || '';
+  // Get client credentials from our utility
+  const clientId = GOOGLE_CLIENT_ID;
+  const clientSecret = GOOGLE_CLIENT_SECRET;
   
   const code = url.searchParams.get('code');
   if (!code) {
@@ -26,7 +26,7 @@ export async function GET({ url, cookies }) {
         code,
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: `${process.env.NODE_ENV === 'production' ? 'https://haplab.com' : 'http://localhost:5173'}/api/auth/google`,
+        redirect_uri: `${getBaseUrl()}/api/auth/google`,
         grant_type: 'authorization_code'
       })
     });
