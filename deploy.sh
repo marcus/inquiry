@@ -56,13 +56,21 @@ echo "Preparing server for update..."
     ssh $SERVER_USER@$SERVER_IP "mkdir -p $SERVER_DIR"
     scp docker-compose.yml $SERVER_USER@$SERVER_IP:$SERVER_DIR/
     
-    # Check if .env file exists locally
-    if [ -f ".env" ]; then
-        echo "Copying .env file to server..."
+    # Check if .env-prod file exists locally
+    if [ -f ".env-prod" ]; then
+        echo "Copying production environment file to server..."
+        scp .env-prod $SERVER_USER@$SERVER_IP:$SERVER_DIR/.env
+    elif [ -f ".env" ]; then
+        echo "No .env-prod file found. Copying .env file to server..."
         scp .env $SERVER_USER@$SERVER_IP:$SERVER_DIR/
+        # Ensure NODE_ENV=production is set in the .env file
+        echo "Ensuring NODE_ENV is set to production in .env file..."
+        ssh $SERVER_USER@$SERVER_IP "grep -q '^NODE_ENV=' $SERVER_DIR/.env && sed -i 's/^NODE_ENV=.*/NODE_ENV=production/' $SERVER_DIR/.env || echo 'NODE_ENV=production' >> $SERVER_DIR/.env"
     else
-        echo "No local .env file found. Make sure the server has the necessary environment variables."
+        echo "No environment files found. Creating a basic .env file on the server..."
+        ssh $SERVER_USER@$SERVER_IP "echo 'NODE_ENV=production' > $SERVER_DIR/.env"
     fi
+
 ) &
 PREPARE_PID=$!
 

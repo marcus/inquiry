@@ -47,3 +47,4 @@ deploy_keys/
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 config/client_secret.json
+.env-prod
