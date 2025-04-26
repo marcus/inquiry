@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { getBaseUrl } from '$lib/server/utils';
 
 export async function GET() {
   // Access environment variables with dynamic imports (works in both dev and prod)
@@ -10,10 +11,8 @@ export async function GET() {
     throw new Error('Google authentication configuration error');
   }
   
-  // Determine base URL based on environment
-  const baseUrl = env.NODE_ENV === 'production' 
-    ? 'https://haplab.com' 
-    : 'http://localhost:5173';
+  // Get base URL from utility function
+  const baseUrl = getBaseUrl();
   
   const redirectUri = `${baseUrl}/api/auth/google`; // must match Google Console entry
   

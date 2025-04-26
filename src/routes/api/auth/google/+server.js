@@ -2,6 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
 import { createToken } from '$lib/server/auth';
+import { getBaseUrl } from '$lib/server/utils';
 import { eq } from 'drizzle-orm';
 import { serialize } from 'cookie';
 import { env } from '$env/dynamic/private';
@@ -23,10 +24,8 @@ export async function GET({ url, cookies }) {
   }
 
   try {
-    // Determine base URL based on environment
-    const baseUrl = env.NODE_ENV === 'production' 
-      ? 'https://haplab.com' 
-      : 'http://localhost:5173';
+    // Get base URL from utility function
+    const baseUrl = getBaseUrl();
     
     // Exchange the code for a token
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
