@@ -270,7 +270,7 @@
 			{/if}
 			
 			<div class="mt-4 text-xs text-slate-400">
-				Inquiry &copy; {new Date().getFullYear()} | <a href="/about" class="text-slate-400 hover:text-slate-500 transition-colors">About</a>
+				Inquiry &copy; {new Date().getFullYear()} | <a href="/about" class="text-slate-400 hover:text-slate-500 transition-colors">About</a> | <a href="/privacy" class="text-slate-400 hover:text-slate-500 transition-colors">Privacy Policy</a> | <a href="/terms" class="text-slate-400 hover:text-slate-500 transition-colors">Terms of Service</a>
 			</div>
 		</div>
 	</footer>
