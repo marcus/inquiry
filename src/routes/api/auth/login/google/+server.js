@@ -4,7 +4,9 @@ export async function GET() {
   // Get client ID from environment variable
   const clientId = process.env.PUBLIC_GOOGLE_CLIENT_ID || '';
   
-  const redirectUri = 'http://localhost:5173/api/auth/google'; // must match Google Console entry
+  const redirectUri = `${process.env.NODE_ENV === 'production' 
+    ? 'https://haplab.com' 
+    : 'http://localhost:5173'}/api/auth/google`; // must match Google Console entry
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
