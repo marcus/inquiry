@@ -2,8 +2,6 @@ import { env } from '$env/dynamic/private';
 import { Migrator } from './migrator.js';
 
 export async function runMigrations() {
-  console.log('Running database migrations...');
-  
   // Create a migrator instance with the database path from environment
   const migrator = new Migrator(env.DATABASE_URL);
   

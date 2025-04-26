@@ -5,7 +5,6 @@ import { runMigrations } from '$lib/server/db/migrations/index.js';
 // Run migrations on server startup
 // Wrap in try/catch to prevent app from crashing if migrations fail
 try {
-  console.log('Attempting to run database migrations...');
   runMigrations().then(() => {
     console.log('Migrations completed successfully');
   }).catch(error => {

@@ -1,10 +1,11 @@
 import { redirect } from '@sveltejs/kit';
+import { GOOGLE_CLIENT_ID } from '$env/static/private';
 
 // Create a Google OAuth redirect URL
 export function GET() {
   // Get the client ID from environment or use a fallback mechanism
   // This approach is more resilient during build time
-  const clientId = process.env.PUBLIC_GOOGLE_CLIENT_ID || '';
+  const clientId = GOOGLE_CLIENT_ID || '';
   
   // Redirect to Google's OAuth flow
   const redirectUri = `${process.env.NODE_ENV === 'production' 

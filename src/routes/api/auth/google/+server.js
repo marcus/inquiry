@@ -4,12 +4,13 @@ import { users } from '$lib/server/db/schema';
 import { createToken } from '$lib/server/auth';
 import { eq } from 'drizzle-orm';
 import { serialize } from 'cookie';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
 
 // Google OAuth callback handler
 export async function GET({ url, cookies }) {
   // Get client credentials from environment variables
-  const clientId = process.env.PUBLIC_GOOGLE_CLIENT_ID || '';
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+  const clientId = GOOGLE_CLIENT_ID || '';
+  const clientSecret = GOOGLE_CLIENT_SECRET || '';
   
   const code = url.searchParams.get('code');
   if (!code) {
