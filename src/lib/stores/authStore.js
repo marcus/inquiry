@@ -63,6 +63,11 @@ export async function login(username, password) {
   }
 }
 
+// Function to initiate Google login
+export function googleLogin() {
+  window.location.href = '/api/auth/login/google';
+}
+
 // Function to sign up
 export async function signup(username, email, password) {
   try {

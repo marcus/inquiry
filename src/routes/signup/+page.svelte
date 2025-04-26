@@ -1,6 +1,9 @@
 <script>
   import { goto } from '$app/navigation';
-  import { signup } from '$lib/stores/authStore';
+  import { signup, googleLogin } from '$lib/stores/authStore';
+  import { onMount } from 'svelte';
+  
+  export let data;
   
   let username = '';
   let email = '';
@@ -8,6 +11,37 @@
   let confirmPassword = '';
   let error = '';
   let isSubmitting = false;
+  
+  onMount(() => {
+    // Load Google Identity Services
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    document.head.append(script);
+    
+    script.onload = () => {
+      // Make sure data.googleClientId exists
+      if (data && data.googleClientId) {
+        google.accounts.id.initialize({
+          client_id: data.googleClientId,
+          callback: handleCredentialResponse
+        });
+        
+        // Render the button
+        google.accounts.id.renderButton(
+          document.getElementById('googleButton'),
+          { theme: 'outline', size: 'large', text: 'signup_with', shape: 'rectangular' }
+        );
+      }
+    };
+  });
+  
+  // Handle Google Sign-In callback
+  function handleCredentialResponse(response) {
+    if (response && response.credential) {
+      googleLogin();
+    }
+  }
   
   async function handleSubmit() {
     error = '';
@@ -113,6 +147,17 @@
         {isSubmitting ? 'Creating Account...' : 'Sign Up'}
       </button>
     </div>
+    
+    <div class="relative my-6">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-slate-300"></div>
+      </div>
+      <div class="relative flex justify-center text-sm">
+        <span class="px-2 bg-white text-slate-500">Or sign up with</span>
+      </div>
+    </div>
+    
+    <div id="googleButton" class="flex justify-center"></div>
     
     <div class="text-center text-sm text-slate-500 mt-4">
       Already have an account? <a href="/login" class="text-accent-blue hover:text-accent-blue/80 no-underline">Log in</a>

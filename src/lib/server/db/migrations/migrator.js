@@ -253,7 +253,6 @@ export class Migrator {
     const rolledBackMigrations = await this.getRolledBackMigrations();
     
     if (pendingMigrations.length === 0 && rolledBackMigrations.length === 0) {
-      console.log('No pending migrations to apply');
       return { applied: 0, failed: 0 };
     }
     

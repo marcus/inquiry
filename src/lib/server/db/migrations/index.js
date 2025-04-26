@@ -22,8 +22,6 @@ export async function runMigrations() {
     // Display migration status
     const status = await migrator.getMigrationStatus();
     console.log(`Current migration status: ${status.applied.length} applied, ${status.pending.length} pending`);
-    
-    console.log('All migrations completed successfully');
   } catch (error) {
     console.error('Error running migrations:', error);
     throw error;
