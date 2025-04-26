@@ -13,6 +13,7 @@ Inquiry is a single-page application designed to guide users through Byron Katie
 - **Backend**: Node.js with SvelteKit's server-side capabilities
 - **Database**: SQLite with Drizzle ORM
 - **Styling**: Tailwind CSS with custom styling for a minimalist, contemplative UI
+- **Authentication**: JWT-based authentication with Google OAuth integration
 
 ## Project Structure
 
@@ -21,7 +22,7 @@ Inquiry is a single-page application designed to guide users through Byron Katie
 - `README.md` - Project documentation and setup instructions
 - `package.json` - Project dependencies and scripts
 - `drizzle.config.js` - Configuration for Drizzle ORM
-- `.env` - Environment variables (DATABASE_URL)
+- `.env` - Environment variables (DATABASE_URL, Google OAuth credentials)
 
 ### Source Code (`src/`)
 
@@ -40,6 +41,9 @@ Inquiry is a single-page application designed to guide users through Byron Katie
     - `migrations/` - Database migration files
       - `index.js` - Migration runner
       - `add_guidance_count.js` - Migration to add guidance count column
+  - `auth.js` - Authentication utilities for password hashing, JWT token management
+- `stores/` - Frontend state management
+  - `authStore.js` - Authentication state management with login, signup, profile updates
 
 #### Routes (`src/routes/`)
 
@@ -55,6 +59,19 @@ Inquiry is a single-page application designed to guide users through Byron Katie
     - `+server.js` - GET and POST handlers for inquiries
     - `[id]/` - Dynamic route for individual inquiry operations
       - `+server.js` - DELETE handler for inquiries
+  - `auth/` - Authentication-related API endpoints
+    - `login/` - Login endpoints (username/password and Google)
+    - `signup/` - User registration endpoint
+    - `me/` - Endpoint to get current user information
+    - `logout/` - Endpoint to log out
+    - `change-password/` - Endpoint to change password
+    - `update-profile/` - Endpoint to update username and email
+    - `delete-account/` - Endpoint to delete user account
+    - `google/` - Google OAuth authentication endpoint
+    - `google-redirect/` - Google OAuth callback endpoint
+- `login/` - Login page with username/password and Google authentication
+- `signup/` - User registration page
+- `user/` - User profile management page
 
 ### Static Assets (`static/`)
 
@@ -82,6 +99,25 @@ Inquiry is a single-page application designed to guide users through Byron Katie
    - Each inquiry is timestamped
    - Users can view, revisit, or delete past inquiries
 
+5. **User Authentication and Account Management**
+   - Multiple authentication methods:
+     - Username/password login
+     - Google OAuth integration
+   - Intelligent login handling:
+     - Support for login with either username or email
+     - Smart detection of Google accounts when users attempt password login
+     - Helpful messaging directing Google users to use the Google sign-in option
+   - Account management features:
+     - Profile editing (change username, email for non-Google users)
+     - Password changing (for non-Google users)
+     - Account deletion with confirmation
+   - Security considerations:
+     - Password hashing using bcrypt
+     - JWT tokens for session management
+     - Appropriate UI adjustments for different account types:
+       - Google users cannot change email or password
+       - Password security tab hidden for Google users
+
 ## Database Schema
 
 The database has the following tables:
@@ -104,6 +140,7 @@ The database has the following tables:
 - `username` - Unique username
 - `email` - Unique email address
 - `passwordHash` - Hashed password
+- `googleId` - Google account ID (for Google OAuth users)
 - `createdAt` - Timestamp when the user was created
 
 ### AI Responses Table
@@ -155,10 +192,38 @@ The UI follows a minimalist, contemplative design with:
 - Belief always visible at the top of each step
 - Unobtrusive styling focused on the content
 
+## Authentication System
+
+The authentication system provides:
+
+1. **Multiple Authentication Methods**
+   - Traditional username/password authentication
+   - Google OAuth integration for seamless login
+
+2. **User-Friendly Login Experience**
+   - Login with either username or email address
+   - Intelligent detection of Google accounts
+   - Helpful guidance for users who attempt to log in with password for Google accounts
+
+3. **User Profile Management**
+   - Profile updates with adaptive UI based on account type
+   - Password management for traditional accounts
+   - Account deletion with proper confirmation and cascade deletion
+
+4. **Security Considerations**
+   - JWT-based authentication with proper token management
+   - Password hashing with bcrypt
+   - Protection against common security issues
+
 ## Getting Started for Developers
 
 1. **Setup Environment**
-   - Create a `.env` file with `DATABASE_URL=inquiry.db`
+   - Create a `.env` file with:
+     ```
+     DATABASE_URL=inquiry.db
+     PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+     GOOGLE_CLIENT_SECRET=your_google_client_secret
+     ```
    - Run `npm install` to install dependencies
 
 2. **Database Setup**
@@ -183,3 +248,4 @@ The UI follows a minimalist, contemplative design with:
    - Database schema: `src/lib/server/db/schema.js`
    - API endpoints: `src/routes/api/inquiries/+server.js`
    - Belief processing: `src/lib/utils/beliefProcessor.js`
+   - Authentication: `src/lib/stores/authStore.js` and `src/lib/server/auth.js`

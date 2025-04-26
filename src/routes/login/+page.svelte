@@ -3,7 +3,8 @@
   import { login, googleLogin } from '$lib/stores/authStore';
   import { onMount } from 'svelte';
   
-  export let data;
+  // Use export const instead of export let for data since we're not using it directly
+  export const data = {}; 
   
   let username = '';
   let password = '';
