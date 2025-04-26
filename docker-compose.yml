@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     image: ${DOCKER_REGISTRY:-ghcr.io}/${DOCKER_USERNAME:-marcus}/${DOCKER_IMAGE:-inquiry}:${DOCKER_TAG:-web-latest}
@@ -14,7 +12,7 @@ services:
       - ORIGIN=http://haplab.com
       - JWT_SECRET=${JWT_SECRET:-inquiry_jwt_secret_key_2025}
     volumes:
-      - ./db:/app/db
+      - ./db:/app/db:delegated
     restart: unless-stopped
     deploy:
       resources:
@@ -25,7 +23,7 @@ services:
           cpus: '0.25'
           memory: 256M
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
