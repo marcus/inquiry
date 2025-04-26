@@ -25,7 +25,7 @@ export async function GET({ url, cookies }) {
         code,
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: 'http://localhost:5173/api/auth/google',
+        redirect_uri: `${process.env.NODE_ENV === 'production' ? 'https://haplab.com' : 'http://localhost:5173'}/api/auth/google`,
         grant_type: 'authorization_code'
       })
     });

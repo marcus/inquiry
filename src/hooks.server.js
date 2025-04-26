@@ -3,9 +3,18 @@ import { parse } from 'cookie';
 import { runMigrations } from '$lib/server/db/migrations/index.js';
 
 // Run migrations on server startup
-runMigrations().catch(error => {
-  console.error('Failed to run migrations:', error);
-});
+// Wrap in try/catch to prevent app from crashing if migrations fail
+try {
+  console.log('Attempting to run database migrations...');
+  runMigrations().then(() => {
+    console.log('Migrations completed successfully');
+  }).catch(error => {
+    console.error('Failed to run migrations:', error);
+    // Log the error but don't throw it to allow the app to start
+  });
+} catch (error) {
+  console.error('Error initializing migrations:', error);
+}
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {

@@ -16,7 +16,7 @@ export async function up(db, sqlite) {
   if (!columnExists) {
     // Add googleId column to users table
     sqlite.prepare(`
-      ALTER TABLE users ADD COLUMN google_id TEXT
+      ALTER TABLE users ADD COLUMN 'google_id' TEXT
     `).run();
     console.log('google_id column added successfully');
   } else {
