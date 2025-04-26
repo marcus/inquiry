@@ -44,7 +44,16 @@
 	// Watch for URL changes to detect "new inquiry" requests
 	$effect(() => {
 		if (browser && $page.url.searchParams.get('new') === 'true') {
-			handleNewInquiryRequest();
+			console.log('New inquiry requested via URL parameter');
+			// Remove the parameter immediately to prevent repeated processing
+			const newUrl = new URL(window.location.href);
+			newUrl.searchParams.delete('new');
+			history.replaceState({}, '', newUrl);
+			
+			// Start new inquiry with slight delay to ensure URL change processes first
+			setTimeout(() => {
+				startNewInquiry();
+			}, 50);
 		}
 	});
 	
@@ -68,14 +77,6 @@
 		const textarea = document.createElement('textarea');
 		textarea.innerHTML = text;
 		return textarea.value;
-	}
-
-	// Handle the new inquiry request from URL parameter
-	async function handleNewInquiryRequest() {
-		console.log('New inquiry requested via URL parameter');
-		await startNewInquiry();
-		// Clear the URL parameter
-		goto('/', { replaceState: true });
 	}
 
 	// Try to resume unfinished inquiry on mount
@@ -157,6 +158,11 @@
 		
 		// Reset the inquiry state
 		resetInquiry();
+		
+		// Reset UI state for the summary view
+		forceShowSummary = false;
+		showQuestion = true;
+		isTransitioning = false;
 		
 		// Clear the local storage reference
 		localStorage.removeItem(LOCAL_STORAGE_KEY);
@@ -730,6 +736,17 @@
 						class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						Back
+					</button>
+					
+					<button 
+						onclick={startNewInquiry}
+						disabled={isTransitioning}
+						class="px-4 py-2 ml-4 bg-slate-700 text-white rounded-md hover:bg-slate-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+						</svg>
+						New Inquiry
 					</button>
 				</div>
 				{#if saveSuccess}

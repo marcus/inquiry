@@ -189,7 +189,14 @@
 				{:else if $authStore.isAuthenticated}
 					<a 
 						href="/?new=true" 
-						onclick={toggleMobileMenu}
+						onclick={(e) => {
+							toggleMobileMenu();
+							// Prevent the default a behavior - we'll handle navigation manually
+							e.preventDefault();
+							const url = new URL(window.location.origin);
+							url.searchParams.set('new', 'true');
+							window.location.href = url.toString();
+						}}
 						class="w-full text-center py-4 text-xl font-light text-slate-700 hover:text-accent-blue transition-colors duration-200 border-b border-slate-200"
 					>
 						New Inquiry
