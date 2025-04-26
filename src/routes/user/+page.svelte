@@ -1,6 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import { authStore, logout, changePassword, updateProfile } from '$lib/stores/authStore';
+  import { authStore, logout, changePassword, updateProfile, deleteAccount } from '$lib/stores/authStore';
   import { onMount } from 'svelte';
   
   let currentPassword = '';
@@ -11,6 +11,9 @@
   let isSubmitting = false;
   let activeTab = 'profile';
   let editingProfile = false;
+  let showDeleteConfirm = false;
+  let deleteError = '';
+  let isDeletingAccount = false;
   
   // Profile update form
   let profileUsername = '';
@@ -42,6 +45,39 @@
       console.log('User data:', $authStore.user); // Debug user data
     }
   });
+  
+  async function handleDeleteAccount() {
+    deleteError = '';
+    isDeletingAccount = true;
+    
+    try {
+      const result = await deleteAccount();
+      
+      if (result.success) {
+        // Redirect to home page after successful deletion
+        goto('/');
+      } else {
+        deleteError = result.error || 'Failed to delete account';
+        showDeleteConfirm = false;
+      }
+    } catch (e) {
+      console.error('Delete account error:', e);
+      deleteError = 'An unexpected error occurred';
+      showDeleteConfirm = false;
+    } finally {
+      isDeletingAccount = false;
+    }
+  }
+  
+  function openDeleteConfirm() {
+    showDeleteConfirm = true;
+    deleteError = '';
+  }
+  
+  function closeDeleteConfirm() {
+    showDeleteConfirm = false;
+    deleteError = '';
+  }
   
   async function handleUpdateProfile() {
     profileError = '';
@@ -180,6 +216,12 @@
       </div>
     </div>
     
+    {#if deleteError}
+      <div class="mb-6 p-3 bg-red-50 text-red-700 rounded-md text-sm">
+        {deleteError}
+      </div>
+    {/if}
+    
     {#if activeTab === 'profile'}
       <div class="space-y-6">
         {#if !editingProfile}
@@ -276,6 +318,24 @@
             </form>
           </div>
         {/if}
+        
+        <!-- Delete Account Section -->
+        <div class="pt-8 mt-8 border-t border-slate-200">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-base font-medium text-slate-800">Delete Account</h3>
+              <p class="text-sm text-slate-500 mt-1">
+                Once you delete your account, there is no going back. Please be certain.
+              </p>
+            </div>
+            <button
+              on:click={openDeleteConfirm}
+              class="px-4 py-2 bg-white text-red-600 border border-red-300 rounded-md hover:bg-red-50 transition-colors duration-200 text-sm font-medium"
+            >
+              Delete Account
+            </button>
+          </div>
+        </div>
       </div>
     {:else if activeTab === 'security' && !isGoogleUser}
       <div class="space-y-4">
@@ -341,3 +401,40 @@
     {/if}
   {/if}
 </div>
+
+<!-- Delete Account Confirmation Modal -->
+{#if showDeleteConfirm}
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Delete your account?</h3>
+      <p class="text-sm text-gray-500 mb-6">
+        This will permanently delete your account and all associated data. This action cannot be undone.
+      </p>
+      
+      <div class="flex justify-end space-x-3">
+        <button
+          on:click={closeDeleteConfirm}
+          class="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm font-medium"
+          disabled={isDeletingAccount}
+        >
+          Cancel
+        </button>
+        <button
+          on:click={handleDeleteAccount}
+          class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium flex items-center"
+          disabled={isDeletingAccount}
+        >
+          {#if isDeletingAccount}
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Deleting...
+          {:else}
+            Delete Account
+          {/if}
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}

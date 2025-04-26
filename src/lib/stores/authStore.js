@@ -156,3 +156,30 @@ export async function updateProfile(username, email) {
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
+
+// Function to delete account
+export async function deleteAccount() {
+  try {
+    const response = await fetch('/api/auth/delete-account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      // Clear auth store after successful deletion
+      authStore.set({
+        isAuthenticated: false,
+        user: null,
+        loading: false
+      });
+      return { success: true };
+    } else {
+      return { success: false, error: data.error };
+    }
+  } catch (error) {
+    console.error('Delete account error:', error);
+    return { success: false, error: 'An unexpected error occurred' };
+  }
+}
