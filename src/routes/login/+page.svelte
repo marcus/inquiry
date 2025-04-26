@@ -1,6 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import { PUBLIC_GOOGLE_CLIENT_ID } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { login, googleLogin } from '$lib/stores/authStore';
   import { onMount } from 'svelte';
   

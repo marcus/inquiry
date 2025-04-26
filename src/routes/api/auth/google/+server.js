@@ -4,13 +4,18 @@ import { users } from '$lib/server/db/schema';
 import { createToken } from '$lib/server/auth';
 import { eq } from 'drizzle-orm';
 import { serialize } from 'cookie';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, getBaseUrl } from '$lib/server/env';
+import { env } from '$env/dynamic/private';
 
 // Google OAuth callback handler
 export async function GET({ url, cookies }) {
-  // Get client credentials from our utility
-  const clientId = GOOGLE_CLIENT_ID;
-  const clientSecret = GOOGLE_CLIENT_SECRET;
+  // Access environment variables with dynamic imports (works in both dev and prod)
+  const clientId = env.GOOGLE_CLIENT_ID;
+  const clientSecret = env.GOOGLE_CLIENT_SECRET;
+  
+  if (!clientId || !clientSecret) {
+    console.error('Google credentials not found in environment variables');
+    throw new Error('Google authentication configuration error');
+  }
   
   const code = url.searchParams.get('code');
   if (!code) {
@@ -18,6 +23,11 @@ export async function GET({ url, cookies }) {
   }
 
   try {
+    // Determine base URL based on environment
+    const baseUrl = env.NODE_ENV === 'production' 
+      ? 'https://haplab.com' 
+      : 'http://localhost:5173';
+    
     // Exchange the code for a token
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
@@ -26,7 +36,7 @@ export async function GET({ url, cookies }) {
         code,
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: `${getBaseUrl()}/api/auth/google`,
+        redirect_uri: `${baseUrl}/api/auth/google`,
         grant_type: 'authorization_code'
       })
     });
@@ -96,4 +106,4 @@ export async function GET({ url, cookies }) {
     console.error('Google auth error:', error);
     throw redirect(302, '/login?error=google_auth_error');
   }
-} 
+}

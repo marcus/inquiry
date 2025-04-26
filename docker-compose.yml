@@ -11,6 +11,9 @@ services:
       - DATABASE_URL=/app/db/inquiry.db
       - ORIGIN=http://haplab.com
       - JWT_SECRET=${JWT_SECRET:-inquiry_jwt_secret_key_2025}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - PUBLIC_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
     volumes:
       - ./db:/app/db:delegated
     restart: unless-stopped
