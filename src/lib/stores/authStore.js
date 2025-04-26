@@ -132,3 +132,27 @@ export async function changePassword(currentPassword, newPassword) {
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
+
+// Function to update profile (username and email)
+export async function updateProfile(username, email) {
+  try {
+    const response = await fetch('/api/auth/update-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      // Update the local user data in the store
+      await fetchCurrentUser();
+      return { success: true };
+    } else {
+      return { success: false, error: data.error };
+    }
+  } catch (error) {
+    console.error('Update profile error:', error);
+    return { success: false, error: 'An unexpected error occurred' };
+  }
+}

@@ -10,7 +10,8 @@ export async function GET({ locals }) {
     user: {
       id: locals.user.id,
       username: locals.user.username,
-      email: locals.user.email
+      email: locals.user.email,
+      googleId: locals.user.googleId || null
     }
   });
 }

@@ -1,4 +1,7 @@
 # Inquiry Project Overview
+Use the command
+tree -a -I "node_modules|.git|.DS_Store|.cache|dist|build|coverage|.next|.svelte-kit" --dirsfirst
+to see the whole project structure if you would like to.
 
 ## Project Purpose
 
