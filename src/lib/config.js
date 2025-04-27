@@ -11,7 +11,7 @@ export const aiConfig = {
 // AI model for turnaround suggestions
 export const turnaroundAiConfig = {
   provider: 'openai',
-  model: 'gpt-4o-mini', // Can be changed to a less expensive model later
+  model: 'gpt-4o', // Can be changed to a less expensive model later
 };
 
 // AI model for next belief suggestions

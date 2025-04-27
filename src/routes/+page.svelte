@@ -46,6 +46,15 @@
 	let inquiryId = $state(null);
 	const LOCAL_STORAGE_KEY = 'unfinishedInquiryId';
 
+	// Auto-resize textarea function
+	function autoResizeTextarea(element) {
+		if (!element) return;
+		// Reset height to auto to get the correct scrollHeight
+		element.style.height = 'auto';
+		// Set height to scrollHeight to fit content (plus a small buffer)
+		element.style.height = (element.scrollHeight + 2) + 'px';
+	}
+
 	// Watch for URL changes to detect "new inquiry" requests
 	$effect(() => {
 		if (browser && $page.url.searchParams.get('new') === 'true') {
@@ -78,6 +87,17 @@
 
 	// Try to resume unfinished inquiry on mount
 	onMount(async () => {
+		// Initialize textarea heights for all textareas with content
+		if (browser) {
+			setTimeout(() => {
+				document.querySelectorAll('textarea').forEach(textarea => {
+					if (textarea.value) {
+						autoResizeTextarea(textarea);
+					}
+				});
+			}, 100);
+		}
+
 		const savedId = localStorage.getItem(LOCAL_STORAGE_KEY);
 		if (savedId) {
 			try {
@@ -227,6 +247,17 @@
 		if (showQuestion) {
 			// Reset transition state after fade-in is complete
 			isTransitioning = false;
+			
+			// Resize any visible textareas if they have content
+			if (browser) {
+				setTimeout(() => {
+					document.querySelectorAll('textarea').forEach(textarea => {
+						if (textarea.value) {
+							autoResizeTextarea(textarea);
+						}
+					});
+				}, 50);
+			}
 		}
 	}
 
@@ -435,8 +466,9 @@
 					<div class="space-y-4">
 						<textarea 
 							bind:value={belief} 
-							class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
+							class="w-full p-4 border border-slate-300 rounded-md min-h-[96px] focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none overflow-hidden" 
 							placeholder="Enter your belief here..."
+							oninput={(e) => autoResizeTextarea(e.target)}
 						></textarea>
 
 						<div class="-mt-2">
@@ -464,8 +496,9 @@
 						<h2 class="text-xl font-light mb-2 text-center">Is it true?</h2>
 						<textarea 
 							bind:value={isTrue} 
-							class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
+							class="w-full p-4 border border-slate-300 rounded-md min-h-[96px] focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none overflow-hidden" 
 							placeholder="Your answer..."
+							oninput={(e) => autoResizeTextarea(e.target)}
 						></textarea>
 					</div>
 					
@@ -483,8 +516,9 @@
 						<h2 class="text-xl font-light mb-2 text-center">Can I absolutely know it's true?</h2>
 						<textarea 
 							bind:value={absolutelyTrue} 
-							class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
+							class="w-full p-4 border border-slate-300 rounded-md min-h-[96px] focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none overflow-hidden" 
 							placeholder="Your answer..."
+							oninput={(e) => autoResizeTextarea(e.target)}
 						></textarea>
 					</div>
 					<div class="flex justify-between mt-6">
@@ -508,8 +542,9 @@
 						<h2 class="text-xl font-light mb-2 text-center">How do I react when I believe that thought?</h2>
 						<textarea 
 							bind:value={reaction} 
-							class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
+							class="w-full p-4 border border-slate-300 rounded-md min-h-[96px] focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none overflow-hidden" 
 							placeholder="Your answer..."
+							oninput={(e) => autoResizeTextarea(e.target)}
 						></textarea>
 					</div>
 					<div class="flex justify-between mt-6">
@@ -533,8 +568,9 @@
 						<h2 class="text-xl font-light mb-2 text-center">Who would I be without the thought?</h2>
 						<textarea 
 							bind:value={withoutThought} 
-							class="w-full p-4 border border-slate-300 rounded-md h-24 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none" 
+							class="w-full p-4 border border-slate-300 rounded-md min-h-[96px] focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none overflow-hidden" 
 							placeholder="Your answer..."
+							oninput={(e) => autoResizeTextarea(e.target)}
 						></textarea>
 					</div>
 					<div class="flex justify-between mt-6">
@@ -562,8 +598,8 @@
 								<textarea 
 									id="turnaround1"
 									bind:value={turnaround1} 
-									oninput={handleTurnaround1Change}
-									class="w-full p-3 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none {turnaround1IsAiSuggested && !turnaround1UserModified ? 'bg-blue-50' : ''}" 
+									oninput={(e) => { handleTurnaround1Change(); autoResizeTextarea(e.target); }}
+									class="w-full p-3 border border-slate-300 rounded-md min-h-[128px] focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none overflow-hidden {turnaround1IsAiSuggested && !turnaround1UserModified ? 'bg-blue-50' : ''}" 
 									placeholder="First turnaround..."
 								></textarea>
 							</div>
@@ -572,8 +608,8 @@
 								<textarea 
 									id="turnaround2"
 									bind:value={turnaround2} 
-									oninput={handleTurnaround2Change}
-									class="w-full p-3 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none {turnaround2IsAiSuggested && !turnaround2UserModified ? 'bg-blue-50' : ''}" 
+									oninput={(e) => { handleTurnaround2Change(); autoResizeTextarea(e.target); }}
+									class="w-full p-3 border border-slate-300 rounded-md min-h-[128px] focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none overflow-hidden {turnaround2IsAiSuggested && !turnaround2UserModified ? 'bg-blue-50' : ''}" 
 									placeholder="Second turnaround..."
 								></textarea>
 							</div>
@@ -582,8 +618,8 @@
 								<textarea 
 									id="turnaround3"
 									bind:value={turnaround3} 
-									oninput={handleTurnaround3Change}
-									class="w-full p-3 border border-slate-300 rounded-md h-32 focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none {turnaround3IsAiSuggested && !turnaround3UserModified ? 'bg-blue-50' : ''}" 
+									oninput={(e) => { handleTurnaround3Change(); autoResizeTextarea(e.target); }}
+									class="w-full p-3 border border-slate-300 rounded-md min-h-[128px] focus:ring-2 focus:ring-slate-400 focus:border-transparent resize-none overflow-hidden {turnaround3IsAiSuggested && !turnaround3UserModified ? 'bg-blue-50' : ''}" 
 									placeholder="Third turnaround..."
 								></textarea>
 							</div>
