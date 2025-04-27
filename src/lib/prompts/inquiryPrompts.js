@@ -70,6 +70,29 @@ ${inquiry.withoutThought || 'Not provided'}${inquiry.turnaround1 ? `
 }
 
 /**
- * Re-export the existing next beliefs prompt for consistency
+ * Create a prompt template for suggesting next beliefs based on previous inquiries
+ * 
+ * @param {Array} previousBeliefs - Array of previous beliefs and their potential next beliefs
+ * @returns {string} - The formatted prompt for the AI
  */
-export { createNextBeliefsPrompt } from './nextBeliefsPrompt'; 
+export function createNextBeliefsPrompt(previousBeliefs) {
+  return `You are an expert in Byron Katie's "The Work" method of inquiry, helping explore stressful thoughts.
+
+Below are stressful beliefs I've examined, along with potential next beliefs. Analyze these beliefs, then suggest at least 5 high-quality stressful beliefs for the user to explore. These should be:
+
+1. Related to themes in their previous inquiries
+2. Deeper explorations of underlying stressful beliefs
+3. Core beliefs that may be unknowingly driving their thinking
+
+Previous suggested next beliefs:
+${previousBeliefs.map((item, index) => `
+Inquiry ${index + 1}:
+- Original Belief: "${item.belief}"
+${item.nextBeliefs.length > 0 
+  ? `- Potential Next Beliefs:\n${item.nextBeliefs.map(belief => `  • ${belief}`).join('\n')}`
+  : ''}`).join('\n')}
+
+Please provide EXACTLY 5 next beliefs to explore, formatted as a simple numbered list. These should be the most insightful, productive beliefs for the user to examine next based on patterns in their previous work. Make them clear, concise, and directly related to the themes you see in their previous inquiries.
+
+Each belief should be a complete statement that can stand on its own for a new inquiry.`;
+} 

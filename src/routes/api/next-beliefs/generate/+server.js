@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { TokenJS } from 'token.js';
 import { env } from '$env/dynamic/private';
-import { aiConfig } from '$lib/config';
+import { nextBeliefsAiConfig } from '$lib/config';
 import { decodeHTMLEntities, stripHtml } from '$lib/utils/htmlUtils';
 import { extractNextBeliefTexts } from '$lib/utils/beliefProcessor';
 import { marked } from 'marked';
@@ -31,10 +31,10 @@ export async function POST({ request, locals }) {
       openaiApiKey: env.OPENAI_API_KEY
     });
 
-    console.log('Calling OpenAI API with model:', aiConfig.model);
+    console.log('Calling OpenAI API with model:', nextBeliefsAiConfig.model);
     const result = await tokenjs.chat.completions.create({
-      provider: aiConfig.provider,
-      model: aiConfig.model,
+      provider: nextBeliefsAiConfig.provider,
+      model: nextBeliefsAiConfig.model,
       messages: [
         {
           role: 'user',

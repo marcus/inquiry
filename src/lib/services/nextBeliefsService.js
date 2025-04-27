@@ -1,6 +1,6 @@
-import { aiConfig } from '$lib/config';
+import { nextBeliefsAiConfig } from '$lib/config';
 import { processNextBeliefs, extractNextBeliefTexts } from '$lib/utils/beliefProcessor';
-import { createNextBeliefsPrompt } from '$lib/prompts/nextBeliefsPrompt';
+import { createNextBeliefsPrompt } from '$lib/prompts/inquiryPrompts';
 import { decodeHTMLEntities, stripHtml } from '$lib/utils/htmlUtils';
 import { env } from '$env/dynamic/private';
 import { marked } from 'marked';
