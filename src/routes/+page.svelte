@@ -408,6 +408,12 @@
 			turnaround3UserModified = true;
 		}
 	}
+
+	function handleSelectBelief(event) {
+		belief = event.detail.belief;
+		currentStep = visibleStep = 0;
+		showQuestion = true;
+	}
 </script>
 
 <div class="space-y-8">
@@ -434,7 +440,7 @@
 						></textarea>
 
 						<div class="-mt-2">
-							<NextBeliefSuggestions />
+							<NextBeliefSuggestions on:selectBelief={handleSelectBelief} />
 						</div>
 						
 						<ToggleGuidanceButton 

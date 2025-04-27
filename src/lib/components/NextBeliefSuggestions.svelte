@@ -2,8 +2,11 @@
   import { fade, slide } from 'svelte/transition';
   import { getNextBeliefUrl } from '$lib/utils/beliefProcessor';
   import { decodeHTMLEntities, stripHtml } from '$lib/utils/htmlUtils';
-  import { onMount } from 'svelte';
+  import { onMount, createEventDispatcher } from 'svelte';
   import { browser } from '$app/environment';
+
+  // Event dispatcher to communicate with parent components
+  const dispatch = createEventDispatcher();
 
   // Component state
   let isLoading = $state(false);
@@ -151,6 +154,18 @@
       isOpen = !isOpen;
     }
   }
+  
+  /**
+   * Handle when a user selects a belief
+   * Instead of navigating, this will emit an event to set the belief value
+   */
+  function selectBelief(belief) {
+    // Dispatch an event to the parent component with the selected belief
+    dispatch('selectBelief', { belief });
+    
+    // Close the panel
+    isOpen = false;
+  }
 </script>
 
 {#if hasCompletedInquiries}
@@ -239,12 +254,12 @@
             <ul class="space-y-2">
               {#each suggestions as suggestion, i}
                 <li transition:fade={{ delay: i * 100, duration: 200 }}>
-                  <a 
-                    href={getNextBeliefUrl(suggestion)}
-                    class="block p-3 bg-blue-50 hover:bg-blue-100 rounded-md text-blue-800 transition-colors duration-200 border border-blue-100"
+                  <button 
+                    onclick={() => selectBelief(suggestion)}
+                    class="block w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-md text-blue-800 transition-colors duration-200 border border-blue-100"
                   >
                     {suggestion}
-                  </a>
+                  </button>
                 </li>
               {/each}
             </ul>
