@@ -180,9 +180,20 @@
 	<!-- Full Screen Mobile Menu -->
 	{#if isMobileMenuOpen}
 		<div 
-			class="fixed inset-0 bg-slate-50 z-10 flex flex-col"
+			class="fixed inset-0 bg-slate-50 z-50 flex flex-col"
 			transition:fly={{ y: -20, duration: 300 }}
 		>
+			<!-- Close button in top-right corner -->
+			<button 
+				onclick={toggleMobileMenu}
+				class="absolute top-6 right-4 p-2 text-slate-700 hover:text-accent-blue transition-colors duration-200"
+				aria-label="Close menu"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+				</svg>
+			</button>
+			
 			<div class="flex-1 flex flex-col items-center justify-center p-6 space-y-6">
 				{#if $authStore.loading}
 					<div class="text-center text-slate-500">Loading...</div>
