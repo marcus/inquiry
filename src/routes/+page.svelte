@@ -11,6 +11,7 @@
 	import InquiryGuidance from '$lib/components/InquiryGuidance.svelte';
 	import { authStore } from '$lib/stores/authStore';
 	import { showGuidanceStore } from '$lib/stores/uiStore';
+	import { decodeHTMLEntities } from '$lib/utils/htmlUtils';
 
 	let currentStep = $state(0);
 	let visibleStep = $state(0);
@@ -74,14 +75,6 @@
 			}
 		}
 	});
-
-	// Helper function to decode HTML entities
-	function decodeHTMLEntities(text) {
-		if (!browser) return text;
-		const textarea = document.createElement('textarea');
-		textarea.innerHTML = text;
-		return textarea.value;
-	}
 
 	// Try to resume unfinished inquiry on mount
 	onMount(async () => {

@@ -2,6 +2,8 @@
  * Utility functions for processing AI-generated belief suggestions
  */
 
+import { decodeHTMLEntities } from './htmlUtils.js';
+
 /**
  * Creates a URL for a new inquiry with the specified belief
  * @param {string} beliefText - The belief text to pre-populate
@@ -12,25 +14,6 @@ export function getNextBeliefUrl(beliefText) {
   // First decode any HTML entities to ensure proper encoding
   const decodedText = decodeHTMLEntities(beliefText.trim());
   return `/?belief=${encodeURIComponent(decodedText)}`;
-}
-
-/**
- * Helper function to decode HTML entities in a string
- * @param {string} text - Text that may contain HTML entities
- * @returns {string} Text with HTML entities decoded
- */
-function decodeHTMLEntities(text) {
-  // Server-safe implementation that doesn't rely on document
-  if (typeof text !== 'string') return '';
-  
-  // Replace common HTML entities
-  return text
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ');
 }
 
 /**

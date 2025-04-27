@@ -1,6 +1,7 @@
 <script>
   import { fade, slide } from 'svelte/transition';
   import { getNextBeliefUrl } from '$lib/utils/beliefProcessor';
+  import { decodeHTMLEntities, stripHtml } from '$lib/utils/htmlUtils';
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
 
@@ -10,34 +11,6 @@
   let suggestions = $state([]);
   let isOpen = $state(false);
   let hasCompletedInquiries = $state(false);
-
-  /**
-   * Helper function to decode HTML entities in a string
-   * @param {string} text - Text that may contain HTML entities
-   * @returns {string} Text with HTML entities decoded
-   */
-  function decodeHTMLEntities(text) {
-    if (typeof text !== 'string') return '';
-    
-    // Replace common HTML entities
-    return text
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-      .replace(/&nbsp;/g, ' ');
-  }
-
-  /**
-   * Helper function to strip any HTML tags from a string
-   * @param {string} text - Text that may contain HTML tags
-   * @returns {string} Text with HTML tags removed
-   */
-  function stripHtml(text) {
-    if (typeof text !== 'string') return '';
-    return text.replace(/<[^>]*>/g, '');
-  }
 
   // Check if the user has completed inquiries
   onMount(async () => {
