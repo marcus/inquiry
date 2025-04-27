@@ -433,14 +433,16 @@
 							placeholder="Enter your belief here..."
 						></textarea>
 
+						<div class="-mt-2">
+							<NextBeliefSuggestions />
+						</div>
+						
 						<ToggleGuidanceButton 
 							isGuidanceVisible={showInquiryGuidance}
 							on:toggle={() => showInquiryGuidance = !showInquiryGuidance}
 						/>
 						
 						<InquiryGuidance isVisible={showInquiryGuidance} />
-						
-						<NextBeliefSuggestions />
 					</div>
 					<div class="flex justify-end mt-6">
 						<button 

@@ -243,7 +243,21 @@ The application leverages AI through multiple integration points:
    - Robust error handling with graceful fallback mechanisms
    - Response parsing and HTML entity handling for clean presentation
 
-3. **Technical Implementation Details**
+3. **Prompt Management System**
+   - Centralized prompt management in `src/lib/prompts/` directory
+   - Core prompt functions in `inquiryPrompts.js`:
+     - `formatInquiryText()` - Standardizes inquiry formatting for all prompts
+     - `createGuidancePrompt()` - Generates guidance prompts for completed inquiries
+     - `createTurnaroundPrompt()` - Creates prompts for turnaround suggestions
+   - Specialized prompts in dedicated files (e.g., `nextBeliefsPrompt.js`) 
+   - Benefits:
+     - Consistency across all AI interactions
+     - Easy maintenance and updates to prompt text
+     - Clear separation of prompt logic from API endpoints
+     - Reusable formatting utilities
+     - Better organization of prompt-related code
+
+4. **Technical Implementation Details**
    - API endpoints for consistent server-side interactions
    - Shared utility functions for HTML processing
    - Caching of extracted beliefs for fallback situations
@@ -283,8 +297,10 @@ The application leverages AI through multiple integration points:
    - API endpoints: `src/routes/api/inquiries/+server.js`
    - Belief processing: `src/lib/utils/beliefProcessor.js`
    - Authentication: `src/lib/stores/authStore.js` and `src/lib/server/auth.js`
+   - Prompt management:
+     - `src/lib/prompts/inquiryPrompts.js` - Core prompt utilities and templates
+     - `src/lib/prompts/nextBeliefsPrompt.js` - Next belief suggestion prompts
    - Next belief suggestions: 
      - `src/lib/services/nextBeliefsService.js` - Service for generating suggestions
-     - `src/lib/prompts/nextBeliefsPrompt.js` - Prompt template for OpenAI
      - `src/routes/api/next-beliefs/generate/+server.js` - API endpoint for AI generation
      - `src/lib/components/NextBeliefSuggestions.svelte` - UI component for displaying suggestions

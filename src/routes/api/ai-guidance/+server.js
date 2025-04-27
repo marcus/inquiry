@@ -5,6 +5,7 @@ import { inquiries, aiResponses } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { env } from '$env/dynamic/private';
 import { aiConfig } from '$lib/config';
+import { createGuidancePrompt, formatInquiryText } from '$lib/prompts/inquiryPrompts';
 
 // Maximum number of guidance generations allowed per inquiry
 const MAX_GUIDANCE_GENERATIONS = 2;
@@ -69,40 +70,11 @@ export async function POST({ request, locals }) {
     const inquiry = inquiryResults[0];
     console.log('Found inquiry:', inquiry.id, inquiry.belief);
     
-    // Format the inquiry text for the prompt
-    const inquiryText = `# Inquiry
+    // Format the inquiry text using the utility function
+    const inquiryText = formatInquiryText(inquiry);
 
-## Belief
-${inquiry.belief}
-
-## Is it true?
-${inquiry.isTrue}
-
-## Can I absolutely know it's true?
-${inquiry.absolutelyTrue}
-
-## How do I react when I believe that thought?
-${inquiry.reaction}
-
-## Who would I be without the thought?
-${inquiry.withoutThought}
-
-## Turnarounds
-1. ${inquiry.turnaround1}
-2. ${inquiry.turnaround2}
-3. ${inquiry.turnaround3}`;
-
-    // Create the prompt
-    const prompt = `Act as a loving non-dual teacher in the tradition of Byron Katie, Michael Singer, Angelo Dilulo, Adyashanti and others. This message contains a completed self-inquiry done in the format that Byron Katie uses in her process of doing "The Work." Please provide a detailed response that gives guidance and insight on the inquiry. The guidance should be fully honest and not simply confirm beliefs that can still be seen through. Your ultimate value is truth and directness above all. Provide feedback on each section of the inquiry. Provide possible next beliefs to inquire into at the end of your response in a list with each topic on a new line (do not exclude the newline) under the heading titled exactly like this:
-
-"Potential Next Beliefs:"
-{{sample belief 1}}
-{{sample belief 2}}
-
-
-There should be no text after the above title. The response should end abruptly after the last possible next belief is listed.
-Here is the inquiry text:
-${inquiryText}`;
+    // Create the prompt using the centralized prompt function
+    const prompt = createGuidancePrompt(inquiryText);
 
     console.log('Initializing TokenJS with OpenAI API key');
     const tokenjs = new TokenJS({

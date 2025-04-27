@@ -2,11 +2,11 @@ import { json } from '@sveltejs/kit';
 import { TokenJS } from 'token.js';
 import { env } from '$env/dynamic/private';
 import { turnaroundAiConfig } from '$lib/config';
+import { createTurnaroundPrompt, formatInquiryText } from '$lib/prompts/inquiryPrompts';
 
 // POST endpoint to generate turnaround suggestions
 export async function POST({ request }) {
   try {
-    console.log('Turnaround suggestions POST request received');
     const { belief, isTrue, absolutelyTrue, reaction, withoutThought } = await request.json();
     
     if (!belief) {
@@ -19,33 +19,20 @@ export async function POST({ request }) {
 
     console.log('Processing turnaround suggestions for belief:', belief);
 
-    // Format the inquiry text for the prompt
-    const inquiryText = `# Inquiry
+    // Create an inquiry object from the request data
+    const inquiry = {
+      belief,
+      isTrue: isTrue || 'Not provided',
+      absolutelyTrue: absolutelyTrue || 'Not provided',
+      reaction: reaction || 'Not provided',
+      withoutThought: withoutThought || 'Not provided'
+    };
 
-## Belief
-${belief}
+    // Format the inquiry text using the utility function
+    const inquiryText = formatInquiryText(inquiry);
 
-## Is it true?
-${isTrue || 'Not provided'}
-
-## Can I absolutely know it's true?
-${absolutelyTrue || 'Not provided'}
-
-## How do I react when I believe that thought?
-${reaction || 'Not provided'}
-
-## Who would I be without the thought?
-${withoutThought || 'Not provided'}`;
-
-    // Create the prompt focused specifically on turnarounds
-    const prompt = `Act as a facilitator for Byron Katie's "The Work" method of inquiry. The goal of a turnaround is to reverse a stressful thought to explore its opposites. This might include turning it toward the self, toward the other, or to the direct opposite. Each turnaround is a way to test the validity of the original belief and uncover alternative perspectives that may feel as true—or truer.Based on the following inquiry, please suggest ONLY three possible turnarounds for the belief. Do not provide any additional commentary, explanation, or introduction. Just provide the three turnarounds in this exact format:
-
-Turnaround 1: [first turnaround]
-Turnaround 2: [second turnaround]
-Turnaround 3: [third turnaround]
-
-Here is the inquiry:
-${inquiryText}`;
+    // Create the prompt using the centralized prompt function
+    const prompt = createTurnaroundPrompt(inquiryText);
 
     console.log('Initializing TokenJS with OpenAI API key');
     const tokenjs = new TokenJS({
