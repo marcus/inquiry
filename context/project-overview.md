@@ -14,6 +14,7 @@ Inquiry is a single-page application designed to guide users through Byron Katie
 - **Database**: SQLite with Drizzle ORM
 - **Styling**: Tailwind CSS with custom styling for a minimalist, contemplative UI
 - **Authentication**: JWT-based authentication with Google OAuth integration
+- **AI Integration**: OpenAI API for guidance and next belief suggestions
 
 ## Project Structure
 
@@ -59,6 +60,10 @@ Inquiry is a single-page application designed to guide users through Byron Katie
     - `+server.js` - GET and POST handlers for inquiries
     - `[id]/` - Dynamic route for individual inquiry operations
       - `+server.js` - DELETE handler for inquiries
+  - `next-beliefs/` - Next belief suggestion endpoints
+    - `+server.js` - GET handler to retrieve next belief suggestions
+    - `generate/` - AI-powered suggestion generation
+      - `+server.js` - POST handler that calls the OpenAI API
   - `auth/` - Authentication-related API endpoints
     - `login/` - Login endpoints (username/password and Google)
     - `signup/` - User registration endpoint
@@ -117,6 +122,13 @@ Inquiry is a single-page application designed to guide users through Byron Katie
      - Appropriate UI adjustments for different account types:
        - Google users cannot change email or password
        - Password security tab hidden for Google users
+
+6. **AI-Powered Next Belief Suggestions**
+   - Analysis of previous inquiry patterns to generate personalized suggestions
+   - Integration with OpenAI API using a specialized prompt template
+   - Intelligent fallback mechanism if AI generation fails
+   - Clickable suggestions that pre-populate a new inquiry
+   - Clean presentation in a collapsible panel on the home page
 
 ## Database Schema
 
@@ -215,6 +227,28 @@ The authentication system provides:
    - Password hashing with bcrypt
    - Protection against common security issues
 
+## AI Integration
+
+The application leverages AI through multiple integration points:
+
+1. **AI Guidance for Completed Inquiries**
+   - Streaming responses from OpenAI's GPT-4o model
+   - Insightful analysis of inquiry content
+   - Automatically linked potential next beliefs
+
+2. **Next Belief Suggestions**
+   - Service architecture that processes previous inquiry data
+   - Specialized prompt engineering with `nextBeliefsPrompt.js`
+   - Direct integration with OpenAI API via the `TokenJS` library
+   - Robust error handling with graceful fallback mechanisms
+   - Response parsing and HTML entity handling for clean presentation
+
+3. **Technical Implementation Details**
+   - API endpoints for consistent server-side interactions
+   - Shared utility functions for HTML processing
+   - Caching of extracted beliefs for fallback situations
+   - Clean separation of responsibilities between components, services, and API handlers
+
 ## Getting Started for Developers
 
 1. **Setup Environment**
@@ -249,3 +283,8 @@ The authentication system provides:
    - API endpoints: `src/routes/api/inquiries/+server.js`
    - Belief processing: `src/lib/utils/beliefProcessor.js`
    - Authentication: `src/lib/stores/authStore.js` and `src/lib/server/auth.js`
+   - Next belief suggestions: 
+     - `src/lib/services/nextBeliefsService.js` - Service for generating suggestions
+     - `src/lib/prompts/nextBeliefsPrompt.js` - Prompt template for OpenAI
+     - `src/routes/api/next-beliefs/generate/+server.js` - API endpoint for AI generation
+     - `src/lib/components/NextBeliefSuggestions.svelte` - UI component for displaying suggestions

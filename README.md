@@ -11,11 +11,13 @@ A single-page application designed to guide users through Byron Katie's method o
 - View and manage past inquiries
 - AI guidance that provides insights on completed inquiries
 - Smart linking of suggested follow-up beliefs for deeper inquiry
+- AI-powered next belief suggestions based on previous inquiry patterns
 
 ## Project Structure
 
 - **Frontend**: SvelteKit with Tailwind CSS for styling
 - **Database**: SQLite with Drizzle ORM
+- **AI Integration**: OpenAI API for guidance and next belief suggestions
 
 ## Getting Started
 
@@ -174,6 +176,7 @@ The deployment script:
 3. **Turnarounds**: Write three turnarounds for the belief
 4. **Summary**: Review your inquiry and save or copy as Markdown
 5. **Inquiries Index**: View, revisit, or delete past inquiries
+6. **Next Belief Suggestions**: Get AI-powered suggestions for your next inquiry based on patterns in your previous work
 
 ## AI Guidance Feature
 
@@ -187,6 +190,19 @@ The Inquiry app includes AI guidance for completed inquiries:
 6. Click any suggested belief to start a new inquiry with that belief pre-populated
 
 This feature helps deepen your inquiry practice by providing thoughtful reflection and suggestions for further exploration.
+
+## Next Belief Suggestions Feature
+
+The app analyzes your previous inquiries and uses AI to suggest meaningful next beliefs to explore:
+
+1. Previous beliefs and their suggested next steps are extracted from your inquiry history
+2. This data is processed and sent to the OpenAI API using a specialized prompt
+3. The AI generates personalized suggestions based on patterns in your past inquiries
+4. The suggestions appear in the "Suggest Next Beliefs" panel on the home page
+5. Click any suggestion to start a new inquiry with that belief pre-populated
+6. If AI generation fails, the system falls back to suggestions extracted from previous AI guidance
+
+This feature helps guide your inquiry practice by identifying meaningful patterns and suggesting productive next steps tailored to your personal journey.
 
 ## License
 
