@@ -93,7 +93,7 @@
 	});
 </script>
 
-<div class="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
+<div class="min-h-screen bg-slate-50 text-slate-800 flex flex-col bg-[url('/background.png')] bg-cover bg-center bg-fixed">
 	<header class="py-6 px-4 md:px-8 relative z-20">
 		<div class="container mx-auto max-w-3xl flex justify-between items-center">
 			<a href="/" class="hover:opacity-80 transition-opacity duration-200">
@@ -180,7 +180,7 @@
 	<!-- Full Screen Mobile Menu -->
 	{#if isMobileMenuOpen}
 		<div 
-			class="fixed inset-0 bg-slate-50 z-50 flex flex-col"
+			class="fixed inset-0 bg-slate-50/95 z-50 flex flex-col"
 			transition:fly={{ y: -20, duration: 300 }}
 		>
 			<!-- Close button in top-right corner -->
@@ -260,11 +260,11 @@
 	{/if}
 	
 	<main class="flex-1">
-		<div class="container mx-auto max-w-3xl px-4 md:px-8 border border-slate-200 rounded-lg shadow-sm bg-white my-4 py-6">
+		<div class="container mx-auto max-w-3xl px-4 md:px-8 border border-slate-200 rounded-lg shadow-sm bg-white/95 my-4 py-6">
 			{@render children()}
 		</div>
 	</main>
-	<footer class="py-4 px-4 md:px-8 text-slate-500 text-center text-sm bg-slate-50">
+	<footer class="py-4 px-4 md:px-8 text-slate-500 text-center text-sm">
 		<div class="container mx-auto max-w-3xl">
 			<!-- Hide quotations on mobile when guidance is shown -->
 			{#if !$showGuidanceStore}
