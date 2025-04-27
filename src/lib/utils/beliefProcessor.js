@@ -301,3 +301,73 @@ function processEmphasizedBeliefs(html, match) {
   // Replace the original section with our linked list
   return html.replace(fullMatch, replacement);
 }
+
+/**
+ * Extracts potential next belief texts from AI response content
+ * Returns an array of belief strings without any HTML formatting
+ * 
+ * @param {string} content - HTML content from AI response
+ * @returns {Array<string>} - Array of extracted next belief strings
+ */
+export function extractNextBeliefTexts(content) {
+  if (!content) return [];
+  
+  // Browser-safe implementation using DOM, if running in browser context
+  if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
+    // Create a temporary DOM element to parse the HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content, 'text/html');
+    
+    // Look for headings that might contain "Potential Next Beliefs"
+    const headings = doc.querySelectorAll('h2, h3');
+    for (const heading of headings) {
+      if (heading.textContent.includes('Potential Next Beliefs')) {
+        // If we found the heading, get the list items that follow it
+        const nextElement = heading.nextElementSibling;
+        if (nextElement && nextElement.tagName === 'UL') {
+          // Extract each list item's text
+          const listItems = nextElement.querySelectorAll('li');
+          return Array.from(listItems)
+            .map(li => decodeHTMLEntities(li.textContent.trim()))
+            .map(text => text.replace(/<[^>]*>/g, '')); // Ensure all HTML tags are removed
+        }
+      }
+    }
+  }
+  
+  // Server-safe implementation using regex
+  // Look for heading followed by list items
+  const headingPattern = /<h[23]>.*?Potential Next Beliefs.*?<\/h[23]>\s*<ul>([\s\S]*?)<\/ul>/i;
+  const match = content.match(headingPattern);
+  
+  if (match && match[1]) {
+    // Extract list items using regex
+    const listItemPattern = /<li>(.*?)<\/li>/g;
+    const beliefs = [];
+    let listItemMatch;
+    
+    while ((listItemMatch = listItemPattern.exec(match[1])) !== null) {
+      // Decode HTML entities and strip any remaining HTML tags
+      const cleanedBelief = decodeHTMLEntities(listItemMatch[1].trim()).replace(/<[^>]*>/g, '');
+      beliefs.push(cleanedBelief);
+    }
+    
+    if (beliefs.length > 0) {
+      return beliefs;
+    }
+  }
+  
+  // If no structured list was found, try to parse from the raw text
+  if (content.includes('Potential Next Beliefs:')) {
+    const afterHeading = content.split('Potential Next Beliefs:')[1];
+    // Try to split by various delimiters
+    const beliefs = afterHeading
+      .split(/[\n,.]/)
+      .map(belief => decodeHTMLEntities(belief.replace(/<[^>]*>/g, '').trim()))
+      .filter(belief => belief.length > 0);
+    
+    return beliefs;
+  }
+  
+  return [];
+}
