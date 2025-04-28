@@ -78,19 +78,19 @@
 					<p>I hope it changes your life the way it changed mine.</p>
 				{:else}
 					<!-- Desktop version of the letter -->
-					<p>Hi, I'm Marcus, I made this tool as a way to share something that has been life changing for me. I spent many years exploring ways to address my dissatisfaction with aspects of life. Life would improve sometimes but never deeply.</p>
+					<p>Hi, I'm Marcus, I made this site to share something that has been life changing for me. I spent many years exploring ways to address a dissatisfaction with many aspects of life.</p>
 					
-					<p>Desppite having mostly given up on self-help, at the recommendation of a friend, I read Byron Katie's book "Loving What Is". At first, it felt confusing. It almost seemed too simple to be real.</p>
+					<p>After trying many and giving up on most forms of self-help, at the recommendation of a friend, I read Byron Katie's book "Loving What Is". At first, it felt confusing. It seemed too simple to be real.</p>
 					
-					<p>Something about it felt different. Despite my doubts, I gave what she calls "The Work" a try.</p>
+					<p>Despite my doubts, I gave what she calls "The Work" a try.</p>
 					
-					<p>It didn't take long to realize that the process works. Something shifted — quietly, but unmistakably.</p>
+					<p>It didn't take long to see that this process works. Something shifted — quietly, but unmistakably.</p>
 					
 					<p>The Work cuts directly to the heart of things. It shows clearly that problems don't live in the world — they live in our unquestioned thoughts.</p>
 					
 					<p><strong>There are no real problems. Only the ones we imagine.</strong></p>
 					
-					<p>If that sounds too good to be true, I invite you to try it for yourself. This completel free tool will guide you through the process: start by writing down a stressful thought or belief, then move through the questions. There's guidance along the way.</p>
+					<p>If that sounds too good to be true, I invite you to try it for yourself. This completely free tool will guide you through the process: start by writing down a stressful thought or belief, then move through the questions. There's guidance along the way.</p>
 					
 					<p>It takes some time and practice, but the rewards are real.</p>
 					
