@@ -50,8 +50,8 @@
 	<div class="relative z-10">
 		<div class="prose prose-slate mx-auto">
 			<!-- Letter from the site creator with paper-like styling -->
-			<div class="bg-amber-50 border border-amber-200 rounded-md p-6 mb-8 shadow-md transform rotate-1 max-w-2xl mx-auto" style="font-family: 'Kalam', cursive;">
-				<h3 class="text-xl mb-4">A Letter from Marcus</h3>
+			<div class="bg-amber-50 border border-amber-200 rounded-md p-6 mb-8 shadow-md transform rotate-1 max-w-2xl mx-auto" style="font-family: 'Kalam';">
+				<h3 class="text-xl mb-4">Welcome to Inquiry,</h3>
 				
 				{#if isMobile}
 					<!-- Mobile version of the letter -->
