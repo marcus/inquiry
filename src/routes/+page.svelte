@@ -7,9 +7,8 @@
 	import InquirySummary from '$lib/components/InquirySummary.svelte';
 	import WelcomeScreen from '$lib/components/WelcomeScreen.svelte';
 	import NextBeliefSuggestions from '$lib/components/NextBeliefSuggestions.svelte';
-	import ToggleGuidanceButton from '$lib/components/ToggleGuidanceButton.svelte';
-	import InquiryGuidance from '$lib/components/InquiryGuidance.svelte';
-	import TurnaroundInstructions from '$lib/components/TurnaroundInstructions.svelte';
+	import GuidanceExpander from '$lib/components/GuidanceExpander.svelte';
+	import { guidanceContent } from '$lib/guidance/index.js';
 	import { authStore } from '$lib/stores/authStore';
 	import { showGuidanceStore } from '$lib/stores/uiStore';
 	import { decodeHTMLEntities } from '$lib/utils/htmlUtils';
@@ -30,6 +29,12 @@
 	let showQuestion = $state(true);
 	let forceShowSummary = $state(false);
 	let showInquiryGuidance = $state(false);
+	let showIsTrueGuidance = $state(false);
+	let showAbsolutelyTrueGuidance = $state(false);
+	let showReactionGuidance = $state(false);
+	let showWithoutThoughtGuidance = $state(false);
+	let showTurnaroundGuidance = $state(false);
+	let showSummaryGuidance = $state(false);
 	let isSuggestingTurnarounds = $state(false);
 	let streamingTurnarounds = $state('');
 	let turnaroundError = $state(null);
@@ -477,12 +482,12 @@
 							<NextBeliefSuggestions on:selectBelief={handleSelectBelief} />
 						</div>
 						
-						<ToggleGuidanceButton 
-							isGuidanceVisible={showInquiryGuidance}
-							on:toggle={() => showInquiryGuidance = !showInquiryGuidance}
+						<GuidanceExpander 
+							guidanceKey="inquiry"
+							title="How does inquiry work?"
+							content={guidanceContent.inquiry.content}
+							bind:isVisible={showInquiryGuidance}
 						/>
-						
-						<InquiryGuidance isVisible={showInquiryGuidance} />
 					</div>
 					<div class="flex justify-end mt-6">
 						<button 
@@ -513,6 +518,13 @@
 							Next
 						</button>
 					</div>
+					
+					<GuidanceExpander 
+						guidanceKey="isTrue"
+						title="About this question"
+						content={guidanceContent.isTrue.content}
+						bind:isVisible={showIsTrueGuidance}
+					/>
 				{:else if visibleStep === 2}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Can I absolutely know it's true?</h2>
@@ -539,6 +551,13 @@
 							Next
 						</button>
 					</div>
+					
+					<GuidanceExpander 
+						guidanceKey="absolutelyTrue"
+						title="About this question"
+						content={guidanceContent.absolutelyTrue.content}
+						bind:isVisible={showAbsolutelyTrueGuidance}
+					/>
 				{:else if visibleStep === 3}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">How do I react when I believe that thought?</h2>
@@ -549,6 +568,7 @@
 							oninput={(e) => autoResizeTextarea(e.target)}
 						></textarea>
 					</div>
+					
 					<div class="flex justify-between mt-6">
 						<button 
 							onclick={() => { currentStep = visibleStep - 1; goToPreviousStep(); }}
@@ -565,6 +585,13 @@
 							Next
 						</button>
 					</div>
+					
+					<GuidanceExpander 
+						guidanceKey="reaction"
+						title="About this question"
+						content={guidanceContent.reaction.content}
+						bind:isVisible={showReactionGuidance}
+					/>
 				{:else if visibleStep === 4}
 					<div class="space-y-4">
 						<h2 class="text-xl font-light mb-2 text-center">Who would I be without the thought?</h2>
@@ -591,6 +618,13 @@
 							Next
 						</button>
 					</div>
+					
+					<GuidanceExpander 
+						guidanceKey="withoutThought"
+						title="About this question"
+						content={guidanceContent.withoutThought.content}
+						bind:isVisible={showWithoutThoughtGuidance}
+					/>
 				{:else if visibleStep === 5}
 					<div class="space-y-4 mb-8">
 						<h2 class="text-xl font-light mb-6 text-center">Write three turnarounds for your belief</h2>
@@ -635,7 +669,12 @@
 						
 						<div class="text-center mt-4">
 							<div class="flex flex-row justify-center items-center gap-4">
-								<TurnaroundInstructions bind:isVisible={isTurnaroundInstructionsVisible} />
+								<GuidanceExpander 
+									guidanceKey="turnaround"
+									title="How to do turnarounds"
+									content={guidanceContent.turnaround.content}
+									bind:isVisible={showTurnaroundGuidance}
+								/>
 								
 								<button 
 									onclick={suggestTurnarounds}
@@ -720,6 +759,16 @@
 						New Inquiry
 					</button>
 				</div>
+				
+				<div class="mt-6">
+					<GuidanceExpander 
+						guidanceKey="summary"
+						title="Understanding your summary"
+						content={guidanceContent.summary.content}
+						bind:isVisible={showSummaryGuidance}
+					/>
+				</div>
+				
 				{#if saveSuccess}
 					<div transition:fade class="p-3 bg-green-100 text-green-800 rounded-md text-center mt-4">
 						Inquiry saved successfully
