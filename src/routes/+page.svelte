@@ -469,7 +469,7 @@
 		{#if showQuestion && !forceShowSummary && $authStore.isAuthenticated}
 			<div transition:fade={{ duration: 400 }} onoutroend={handleFadeOutEnd} onintroend={handleFadeInEnd} class="w-full">
 				{#if visibleStep === 0}
-					<h2 class="text-xl font-light mb-6 text-center">What belief would you like to examine?</h2>
+					<h2 class="text-xl font-light mb-6 text-center">What stressful thought or belief would you like to examine?</h2>
 					<div class="space-y-4">
 						<textarea 
 							bind:value={belief} 
