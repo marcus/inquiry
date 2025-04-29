@@ -2,6 +2,7 @@
 	import { fade } from 'svelte/transition';
 	import { marked } from 'marked';
 	import { processNextBeliefs, getNextBeliefUrl } from '$lib/utils/beliefProcessor';
+	import { copyToClipboard as copyTextToClipboard, formatInquiryAsMarkdown } from '$lib/utils/clipboard';
 	
 	// Define props with runes in Svelte 5
 	const { inquiry, showGetGuidance = true, showRefreshButton = true } = $props();
@@ -62,31 +63,8 @@
 	function copyToClipboard() {
 		if (!inquiry) return;
 		
-		const summary = `# Inquiry
-
-## Belief
-${inquiry.belief}
-
-## Is it true?
-${inquiry.isTrue}
-
-## Can I absolutely know it's true?
-${inquiry.absolutelyTrue}
-
-## How do I react when I believe that thought?
-${inquiry.reaction}
-
-## Who would I be without the thought?
-${inquiry.withoutThought}
-
-## Turnarounds
-1. ${inquiry.turnaround1}
-2. ${inquiry.turnaround2}
-3. ${inquiry.turnaround3}
-
-Created on ${formatDate(inquiry.createdAt)}`;
-
-		navigator.clipboard.writeText(summary);
+		const summary = formatInquiryAsMarkdown(inquiry, formatDate);
+		copyTextToClipboard(summary);
 	}
 	
 	async function getAIGuidance() {

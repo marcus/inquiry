@@ -12,6 +12,7 @@
 	import { authStore } from '$lib/stores/authStore';
 	import { showGuidanceStore } from '$lib/stores/uiStore';
 	import { decodeHTMLEntities } from '$lib/utils/htmlUtils';
+	import { copyToClipboard as copyTextToClipboard, formatInquiryAsMarkdown } from '$lib/utils/clipboard';
 
 	let currentStep = $state(0);
 	let visibleStep = $state(0);
@@ -327,16 +328,34 @@
 			localStorage.removeItem(LOCAL_STORAGE_KEY);
 			saveSuccess = true;
 			setTimeout(() => { saveSuccess = false; }, 3000);
-		} catch (error) {
-			console.error('Failed to save inquiry:', error);
+		} catch (err) {
+			console.error('Error saving inquiry:', err);
 		} finally {
 			isSaving = false;
 		}
 	}
 
 	function copyToClipboard() {
-		const summary = `# Inquiry\n\n## Belief\n${belief}\n\n## Is it true?\n${isTrue}\n\n## Can I absolutely know it's true?\n${absolutelyTrue}\n\n## How do I react when I believe that thought?\n${reaction}\n\n## Who would I be without the thought?\n${withoutThought}\n\n## Turnarounds\n1. ${turnaround1}\n2. ${turnaround2}\n3. ${turnaround3}\n\nCreated on ${new Date().toLocaleDateString()}`;
-		navigator.clipboard.writeText(summary);
+		const summary = formatInquiryAsMarkdown({
+			belief,
+			isTrue,
+			absolutelyTrue,
+			reaction,
+			withoutThought,
+			turnaround1,
+			turnaround2,
+			turnaround3,
+			createdAt: new Date().toISOString()
+		}, (timestamp) => {
+			const date = new Date(timestamp);
+			return date.toLocaleDateString(undefined, {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
+			});
+		});
+		
+		copyTextToClipboard(summary);
 	}
 
 	// Function to get AI suggestions for turnarounds

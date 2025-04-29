@@ -50,53 +50,24 @@
 	<div class="relative z-10">
 		<div class="prose prose-slate mx-auto">
 			<!-- Letter from the site creator with paper-like styling -->
-			<div class="bg-amber-50 border border-amber-200 rounded-md p-6 mb-8 shadow-md transform rotate-1 max-w-2xl mx-auto" style="font-family: 'Kalam';">
-				{#if isMobile}
-					<!-- Mobile version of the letter -->
-					<p>For years, I tried self-help methods looking for real change.
-					Sometimes life felt better for a while — but the deep dissatisfaction never went away.</p>
-					
-					<p>By my mid-forties, I was tired of trying.
-					Still, I found myself reading Byron Katie's Loving What Is.</p>
-					
-					<p>At first, it seemed confusing — too simple to work.
-					But something about it stayed with me. I gave it a try.</p>
-					
-					<p>And something shifted.</p>
-					
-					<p>The Work showed me that my problems weren't "out there" — they lived in my thoughts.</p>
-					
-					<p>There are no real problems. Only the ones we believe.</p>
-					
-					<p>Skeptical? I was too.</p>
-					
-					<p>This site will guide you through the process.
-					Start with a stressful thought. Follow the questions. See what you find.</p>
-					
-					<p>It takes practice — but it's real.</p>
-					
-					<p>I hope it changes your life the way it changed mine.</p>
-				{:else}
-					<!-- Desktop version of the letter -->
-					<p>Hi, I'm Marcus, I made this site to share something that has been life changing for me. I spent a very long time exploring ways to address a deep dissatisfaction with many aspects of life.</p>
-					
-					<p>After trying many and giving up on most types of self-help, at the recommendation of a friend, I read Byron Katie's book "Loving What Is". At first, it felt confusing. It seemed too simple to be real.</p>
-					
-					<p>Despite my doubts though, I gave what Katie calls "The Work" a try.</p>
-					
-					<p>It didn't take long to see that unlike everything I'd tried before, this works.</p>
-					
-					<p>The Work shows clearly that problems don't live in the world — they only live in our unquestioned thoughts.</p>
-					
-					<p><strong>There are no real problems. Only the ones we imagine.</strong></p>
-					
-					<p>If that sounds too good to be true, I invite you to try it for yourself. This completely free tool will guide you through the process: start by writing down a stressful thought or belief, then move through the questions. That's all there is to it. There's guidance along the way.</p>
-					
-					<p>It takes some practice, but the rewards are real.</p>
-					
-					<p>I hope this form of inquiry will be as transformative for you as it has been for me.</p>
-				{/if}
+			<div class="bg-amber-50 border border-amber-200 rounded-md p-6 mb-8 shadow-md transform rotate-1 max-w-2xl mx-auto" style="font-family: 'Kalam'; font-size: 1.1rem;">
+				<p>Hi, I'm Marcus, I made this site to share something that has been life changing for me. I spent a very long time exploring ways to address a deep dissatisfaction with many aspects of life.</p>
 				
+				<p>After trying many and giving up on most types of self-help, at the recommendation of a friend, I read Byron Katie's book "Loving What Is". At first, it felt confusing. It seemed too simple to be real.</p>
+				
+				<p>Despite my doubts though, I gave what Katie calls "The Work" a try.</p>
+				
+				<p>It didn't take long to see that unlike everything I'd tried before, this works.</p>
+				
+				<p>The Work shows clearly that problems don't live in the world — they only live in our unquestioned thoughts.</p>
+				
+				<p><strong>There are no real problems. Only the ones we imagine.</strong></p>
+				
+				<p>If that sounds too good to be true, I invite you to try it for yourself. This completely free tool will guide you through the process: start by writing down a stressful thought or belief, then move through the questions. That's all there is to it. There's guidance along the way.</p>
+				
+				<p>It takes some practice, but the rewards are real.</p>
+				
+				<p>I hope this form of inquiry will be as transformative for you as it has been for me.</p>
 				<p class="text-right mt-4">— Marcus</p>
 			</div>
 			

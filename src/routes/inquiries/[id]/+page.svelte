@@ -4,6 +4,7 @@
 	import { marked } from 'marked';
 	import InquirySummary from '$lib/components/InquirySummary.svelte';
 	import { processNextBeliefs } from '$lib/utils/beliefProcessor';
+	import { copyToClipboard as copyTextToClipboard, formatInquiryAsMarkdown } from '$lib/utils/clipboard';
 	
 	// Access props in Svelte 5
 	const { data } = $props();
@@ -64,31 +65,8 @@
 	function copyToClipboard() {
 		if (!inquiry) return;
 		
-		const summary = `# Inquiry
-
-## Belief
-${inquiry.belief}
-
-## Is it true?
-${inquiry.isTrue}
-
-## Can I absolutely know it's true?
-${inquiry.absolutelyTrue}
-
-## How do I react when I believe that thought?
-${inquiry.reaction}
-
-## Who would I be without the thought?
-${inquiry.withoutThought}
-
-## Turnarounds
-1. ${inquiry.turnaround1}
-2. ${inquiry.turnaround2}
-3. ${inquiry.turnaround3}
-
-Created on ${formatDate(inquiry.createdAt)}`;
-
-		navigator.clipboard.writeText(summary);
+		const summary = formatInquiryAsMarkdown(inquiry, formatDate);
+		copyTextToClipboard(summary);
 	}
 	
 	async function getAIGuidance() {
